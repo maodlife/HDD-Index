@@ -16,6 +16,8 @@ void MainWindow::on_addNewBtn_clicked() {
     QString selectDirPath = QFileDialog::getExistingDirectory(
         nullptr, "Select Folder", "", QFileDialog::DontResolveSymlinks);
     auto rootPtr = TreeNode::CreateTreeNodeByDirPath(selectDirPath);
-    TreeModel *model = new TreeModel(rootPtr);
+    TreeNode::saveTreeToFile(rootPtr, QCoreApplication::applicationDirPath() + "/testjson.txt");
+    auto loadRootPtr = TreeNode::loadTreeFromFile(QCoreApplication::applicationDirPath() + "/testjson.txt");
+    TreeModel *model = new TreeModel(loadRootPtr);
     ui->hddTreeView->setModel(model);
 }

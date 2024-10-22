@@ -1,6 +1,7 @@
 #include "treenode.h"
 #include <QDir>
 #include <queue>
+#include <QJsonDocument>
 
 using namespace std;
 
@@ -33,4 +34,59 @@ std::shared_ptr<TreeNode> TreeNode::CreateTreeNodeByDirPath(QString path) {
         }
     }
     return rootPtr;
+}
+
+QJsonObject TreeNode::toJsonObject() const {
+    QJsonObject json;
+    json["name"] = name;
+    json["dirPath"] = dirPath;
+    json["isDir"] = isDir;
+
+    QJsonArray childArray;
+    for (const auto &child : childs) {
+        childArray.append(child->toJsonObject());
+    }
+    json["childs"] = childArray;
+
+    return json;
+}
+
+std::shared_ptr<TreeNode> TreeNode::fromJsonObject(const QJsonObject &json) {
+    auto node = std::make_shared<TreeNode>();
+    node->name = json["name"].toString();
+    node->dirPath = json["dirPath"].toString();
+    node->isDir = json["isDir"].toBool();
+
+    QJsonArray childArray = json["childs"].toArray();
+    for (const auto &childValue : std::as_const(childArray)) {
+        auto childPtr = fromJsonObject(childValue.toObject());
+        childPtr->parent = node;
+        node->childs.push_back(childPtr);
+    }
+
+    return node;
+}
+
+void TreeNode::saveTreeToFile(const std::shared_ptr<TreeNode> &root, const QString &filePath)
+{
+    QJsonDocument doc(root->toJsonObject());
+    QFile file(filePath);
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(doc.toJson());
+        file.close();
+    }
+}
+
+std::shared_ptr<TreeNode> TreeNode::loadTreeFromFile(const QString &filePath)
+{
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return nullptr;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    return TreeNode::fromJsonObject(doc.object());
 }

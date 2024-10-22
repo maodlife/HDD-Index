@@ -5,6 +5,8 @@
 #include <QString>
 #include <memory>
 #include <vector>
+#include <QJsonObject>
+#include <QJsonArray>
 
 using namespace std;
 
@@ -20,11 +22,18 @@ public:
     // 读文件夹路径, 并访问磁盘目录, 构造一棵树
     static std::shared_ptr<TreeNode> CreateTreeNodeByDirPath(QString path);
 
-    // 读字符串, 用字符串内容恢复一棵树
-    // todo
+    // Json
+    // 将当前节点转换为 QJsonObject
+    QJsonObject toJsonObject() const;
 
-    // 导出这棵树的内容到字符串
-    // todo
+    // 从 QJsonObject 中构建 TreeNode
+    static std::shared_ptr<TreeNode> fromJsonObject(const QJsonObject &json);
+
+    // 保存树结构到 JSON 文件
+    static void saveTreeToFile(const std::shared_ptr<TreeNode>& root, const QString& filePath);
+
+    // 从 JSON 文件加载树结构
+    static std::shared_ptr<TreeNode> loadTreeFromFile(const QString& filePath);
 
 private:
 };
