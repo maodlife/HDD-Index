@@ -9,6 +9,8 @@ struct HddData {
     QString labelName;
     bool hasLoaded = false;
     bool isDirty = false;
+    void LoadJson(QString path);
+    void TryLoadJson(QString path);
 };
 
 class Solution {

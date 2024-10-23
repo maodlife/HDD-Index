@@ -23,6 +23,8 @@ public:
 private slots:
     void on_addNewBtn_clicked();
 
+    void on_hddComboBox_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     Solution s;
