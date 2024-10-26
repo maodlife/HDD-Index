@@ -4,7 +4,7 @@
 Solution::Solution() {}
 
 void HddData::LoadJson(QString path) {
-    auto rootPtr = TreeNode::loadTreeFromFile(path);
+    auto rootPtr = TreeNode::loadTreeFromFile<HddTreeNode>(path);
     this->rootPtr = rootPtr;
     this->hasLoaded = true;
 }

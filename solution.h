@@ -2,11 +2,21 @@
 #define SOLUTION_H
 
 #include "treenode.h"
+#include "hddtreenode.h"
+#include "repotreenode.h"
 #include <vector>
 
 struct HddData {
-    std::shared_ptr<TreeNode> rootPtr;
+    std::shared_ptr<HddTreeNode> rootPtr;
     QString labelName;
+    bool hasLoaded = false;
+    bool isDirty = false;
+    void LoadJson(QString path);
+    void TryLoadJson(QString path);
+};
+
+struct RepoData {
+    std::shared_ptr<TreeNode> rootPtr;
     bool hasLoaded = false;
     bool isDirty = false;
     void LoadJson(QString path);
@@ -17,6 +27,7 @@ class Solution {
 public:
     Solution();
     std::vector<HddData> hddDataList;
+    HddData repoData;
 
 private:
 };
