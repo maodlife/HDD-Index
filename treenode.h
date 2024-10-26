@@ -2,13 +2,14 @@
 #define TREENODE_H
 
 #include <QAbstractItemModel>
+#include <QDir>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QString>
+#include <concepts>
 #include <memory>
 #include <vector>
-#include <QJsonObject>
-#include <QJsonArray>
-
-using namespace std;
 
 class TreeNode {
 public:
@@ -16,26 +17,75 @@ public:
     std::weak_ptr<TreeNode> parent;                // 父目录
     std::vector<std::shared_ptr<TreeNode>> childs; // 子目录/文件
     QString name;                                  // 自己的名字
-    QString dirPath;                               // 绝对路径
+    QString dirPath;                               // 绝对路径  todo: delete
     bool isDir;                                    // 是否是目录
 
-    // 读文件夹路径, 并访问磁盘目录, 构造一棵树
-    static std::shared_ptr<TreeNode> CreateTreeNodeByDirPath(QString path);
-
-    // Json
-    // 将当前节点转换为 QJsonObject
-    QJsonObject toJsonObject() const;
-
-    // 从 QJsonObject 中构建 TreeNode
-    static std::shared_ptr<TreeNode> fromJsonObject(const QJsonObject &json);
-
     // 保存树结构到 JSON 文件
-    static void saveTreeToFile(const std::shared_ptr<TreeNode>& root, const QString& filePath);
+    template <typename NodeType>
+    requires std::derived_from<NodeType, TreeNode>
+    static void saveTreeToFile(const std::shared_ptr<NodeType> &root,
+                               const QString &filePath);
 
     // 从 JSON 文件加载树结构
-    static std::shared_ptr<TreeNode> loadTreeFromFile(const QString& filePath);
+    template <typename NodeType>
+    requires std::derived_from<NodeType, TreeNode>
+    static std::shared_ptr<NodeType> loadTreeFromFile(const QString &filePath);
 
-private:
+    // 将当前节点转换为 QJsonObject
+    virtual QJsonObject toJsonObject() const;
+
+    // 从 QJsonObject 中构建 TreeNode
+    template <typename NodeType>
+    requires std::derived_from<NodeType, TreeNode>
+    static std::shared_ptr<NodeType> fromJsonObject(const QJsonObject &json);
+
+    virtual void fromJsonObjectExtend(const QJsonObject &json) = 0;
 };
+
+template <typename NodeType>
+    requires std::derived_from<NodeType, TreeNode>
+void TreeNode::saveTreeToFile(const std::shared_ptr<NodeType> &root,
+                              const QString &filePath) {
+    QJsonDocument doc(root->toJsonObject());
+    QFile file(filePath);
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(doc.toJson());
+        file.close();
+    }
+}
+
+template <typename NodeType>
+    requires std::derived_from<NodeType, TreeNode>
+std::shared_ptr<NodeType> TreeNode::loadTreeFromFile(const QString &filePath) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return nullptr;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    return TreeNode::fromJsonObject<NodeType>(doc.object());
+}
+
+template <typename NodeType>
+    requires std::derived_from<NodeType, TreeNode>
+std::shared_ptr<NodeType> TreeNode::fromJsonObject(const QJsonObject &json) {
+    auto node = std::make_shared<NodeType>();
+    node->name = json["name"].toString();
+    node->dirPath = json["dirPath"].toString();
+    node->isDir = json["isDir"].toBool();
+    node->fromJsonObjectExtend(json); // 额外数据恢复
+
+    QJsonArray childArray = json["childs"].toArray();
+    for (const auto &childValue : std::as_const(childArray)) {
+        auto childPtr = fromJsonObject<NodeType>(childValue.toObject());
+        childPtr->parent = node;
+        node->childs.push_back(childPtr);
+    }
+
+    return node;
+}
 
 #endif // TREENODE_H
