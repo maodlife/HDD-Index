@@ -16,7 +16,7 @@ struct HddData {
 };
 
 struct RepoData {
-    std::shared_ptr<TreeNode> rootPtr;
+    std::shared_ptr<RepoTreeNode> rootPtr;
     bool hasLoaded = false;
     bool isDirty = false;
     void LoadJson(QString path);
@@ -27,7 +27,7 @@ class Solution {
 public:
     Solution();
     std::vector<HddData> hddDataList;
-    HddData repoData;
+    RepoData repoData;
 
 private:
 };

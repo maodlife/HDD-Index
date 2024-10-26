@@ -10,12 +10,11 @@ class NodeSaveData {
 };
 
 // Repository树节点
-class RepoTreeNode : TreeNode {
+class RepoTreeNode : public TreeNode {
 public:
     RepoTreeNode();
     std::vector<NodeSaveData> nodeSaveDatas;
 
-private:
     QJsonObject toJsonObject() const override;
     void fromJsonObjectExtend(const QJsonObject &json) override;
 };

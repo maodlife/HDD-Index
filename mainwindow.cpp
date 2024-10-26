@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
     // init reposity if empty
     if (s.repoData.hasLoaded == false) {
-        std::shared_ptr<TreeNode> rootPtr = std::make_shared<TreeNode>();
+        std::shared_ptr<RepoTreeNode> rootPtr = std::make_shared<RepoTreeNode>();
         rootPtr->isDir = true;
         rootPtr->name = "Repository";
         s.repoData.rootPtr = rootPtr;
