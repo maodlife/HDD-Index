@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QDebug>
+#include <algorithm>
 
 using namespace std;
 
@@ -39,9 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
         s.repoData.hasLoaded = true;
     }
     // set hdd combobox
-    for (const auto &hddData : std::as_const(s.hddDataList)) {
-        ui->hddComboBox->addItem(hddData.labelName);
-    }
+    setHddComboboxView();
     // set repository tree view
     s.repoData.model = make_shared<TreeModel>(s.repoData.rootPtr);
     ui->repoTreeView->setModel(s.repoData.model.get());
@@ -50,15 +49,30 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::on_addNewBtn_clicked() {
-    // auto hddLabel = ui->hddLabelInputTextEdit->toPlainText();
-    // QString selectDirPath = QFileDialog::getExistingDirectory(
-    //     nullptr, "Select Folder", "", QFileDialog::DontResolveSymlinks);
-    // auto rootPtr = TreeNode::CreateTreeNodeByDirPath(selectDirPath);
-    // TreeNode::saveTreeToFile(rootPtr, QCoreApplication::applicationDirPath() +
-    // "/testjson.txt"); auto loadRootPtr =
-    // TreeNode::loadTreeFromFile(QCoreApplication::applicationDirPath() +
-    // "/testjson.txt"); TreeModel *model = new TreeModel(loadRootPtr);
-    // ui->hddTreeView->setModel(model);
+    auto hddLabel = ui->hddLabelInputTextEdit->toPlainText();
+    // empty label
+    if (hddLabel.size() == 0) {
+        return;
+    }
+    // same label
+    if (find_if(s.hddDataList.begin(), s.hddDataList.end(),
+                [=](const auto &value) { return value.labelName == hddLabel; }) !=
+        s.hddDataList.end()) {
+        return;
+    }
+    QString selectDirPath = QFileDialog::getExistingDirectory(
+        nullptr, "Select Folder", "", QFileDialog::DontResolveSymlinks);
+    auto rootPtr = HddTreeNode::CreateTreeNodeByDirPath(selectDirPath);
+    HddData hddData;
+    hddData.rootPtr = rootPtr;
+    hddData.labelName = hddLabel;
+    hddData.hasLoaded = true;
+    hddData.isDirty = true;
+    s.hddDataList.push_back(hddData);
+    TreeModel *model = new TreeModel(rootPtr);
+    ui->hddTreeView->setModel(model);
+    // set hdd combobox
+    setHddComboboxView();
 }
 
 void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
@@ -77,5 +91,13 @@ void MainWindow::on_createDirBtn_clicked()
     }
     auto currRepoTreeIdx = ui->repoTreeView->currentIndex();
     s.repoData.model->MakeDir(currRepoTreeIdx, ui->createDirNameLineEdit->text(), s.repoData.rootPtr);
+}
+
+void MainWindow::setHddComboboxView()
+{
+    ui->hddComboBox->clear();
+    for (const auto &hddData : std::as_const(s.hddDataList)) {
+        ui->hddComboBox->addItem(hddData.labelName);
+    }
 }
 

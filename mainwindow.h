@@ -30,5 +30,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Solution s;
+
+    void setHddComboboxView();
 };
 #endif // MAINWINDOW_H
