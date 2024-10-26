@@ -30,6 +30,9 @@ public:
 
     // 返回给定索引处的数据
     QVariant data(const QModelIndex &index, int role) const override;
+
+    // 在index下创建子目录
+    void MakeDir(const QModelIndex &index, QString name, std::shared_ptr<TreeNode> rootPtr);
 };
 
 #endif // TREEMODEL_H

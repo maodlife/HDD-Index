@@ -1,5 +1,8 @@
 #include "solution.h"
 #include <QCoreApplication>
+#include <algorithm>
+
+using namespace std;
 
 Solution::Solution() {}
 

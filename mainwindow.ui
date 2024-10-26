@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1096</width>
+    <height>760</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,25 +19,25 @@
      <rect>
       <x>10</x>
       <y>50</y>
-      <width>341</width>
-      <height>391</height>
+      <width>521</width>
+      <height>511</height>
      </rect>
     </property>
    </widget>
    <widget class="QTreeView" name="hddTreeView">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>550</x>
       <y>90</y>
-      <width>341</width>
-      <height>391</height>
+      <width>531</width>
+      <height>471</height>
      </rect>
     </property>
    </widget>
    <widget class="QComboBox" name="hddComboBox">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>550</x>
       <y>10</y>
       <width>251</width>
       <height>32</height>
@@ -47,7 +47,7 @@
    <widget class="QPushButton" name="refreshBtn">
     <property name="geometry">
      <rect>
-      <x>670</x>
+      <x>810</x>
       <y>10</y>
       <width>88</width>
       <height>34</height>
@@ -60,7 +60,7 @@
    <widget class="QPushButton" name="addNewBtn">
     <property name="geometry">
      <rect>
-      <x>670</x>
+      <x>810</x>
       <y>50</y>
       <width>88</width>
       <height>34</height>
@@ -73,11 +73,34 @@
    <widget class="QPlainTextEdit" name="hddLabelInputTextEdit">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>550</x>
       <y>50</y>
       <width>251</width>
       <height>31</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="createDirNameLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>570</y>
+      <width>351</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="createDirBtn">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>570</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>创建子目录</string>
     </property>
    </widget>
   </widget>
@@ -86,8 +109,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>30</height>
+     <width>1096</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>

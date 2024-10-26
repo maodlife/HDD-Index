@@ -4,6 +4,9 @@
 #include "treenode.h"
 #include <QDir>
 #include <QFileDialog>
+#include <QDebug>
+
+using namespace std;
 
 const QString MainWindow::JsonFileDirPath = "/JsonFiles";
 const QString MainWindow::RepoJsonFileName = "RepoTreeData.txt";
@@ -40,8 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
         ui->hddComboBox->addItem(hddData.labelName);
     }
     // set repository tree view
-    TreeModel *model = new TreeModel(s.repoData.rootPtr);
-    ui->repoTreeView->setModel(model);
+    s.repoData.model = make_shared<TreeModel>(s.repoData.rootPtr);
+    ui->repoTreeView->setModel(s.repoData.model.get());
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -66,3 +69,13 @@ void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
     TreeModel *model = new TreeModel(hddData.rootPtr);
     ui->hddTreeView->setModel(model);
 }
+
+void MainWindow::on_createDirBtn_clicked()
+{
+    if (ui->createDirNameLineEdit->text().isEmpty()){
+        return;
+    }
+    auto currRepoTreeIdx = ui->repoTreeView->currentIndex();
+    s.repoData.model->MakeDir(currRepoTreeIdx, ui->createDirNameLineEdit->text(), s.repoData.rootPtr);
+}
+

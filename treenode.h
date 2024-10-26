@@ -40,6 +40,13 @@ public:
     static std::shared_ptr<NodeType> fromJsonObject(const QJsonObject &json);
 
     virtual void fromJsonObjectExtend(const QJsonObject &json) = 0;
+
+    virtual void AddChild(QString name, std::shared_ptr<TreeNode> rootPtr);
+
+    void sortChildByName();
+
+    // 返回裸指针的智能指针，不能是根节点, 否则返回nullptr
+    static std::shared_ptr<TreeNode> get_shared_ptr(TreeNode* ptr);
 };
 
 template <typename NodeType>

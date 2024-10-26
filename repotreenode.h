@@ -17,6 +17,8 @@ public:
 
     QJsonObject toJsonObject() const override;
     void fromJsonObjectExtend(const QJsonObject &json) override;
+
+    void AddChild(QString name, std::shared_ptr<TreeNode> rootPtr) override;
 };
 
 #endif // REPOTREENODE_H

@@ -25,6 +25,8 @@ private slots:
 
     void on_hddComboBox_currentIndexChanged(int index);
 
+    void on_createDirBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
     Solution s;
