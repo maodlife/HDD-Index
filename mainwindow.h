@@ -29,6 +29,8 @@ private slots:
 
     void on_AddToRepoAndDeclareBtn_clicked();
 
+    void on_saveHddBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
     Solution s;

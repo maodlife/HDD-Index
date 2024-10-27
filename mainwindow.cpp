@@ -114,3 +114,16 @@ void MainWindow::on_AddToRepoAndDeclareBtn_clicked()
     // todo
 }
 
+
+void MainWindow::on_saveHddBtn_clicked()
+{
+    for (auto hddData : s.hddDataList){
+        if (hddData.isDirty == false)
+            continue;
+        QString filePath = QCoreApplication::applicationDirPath() + JsonFileDirPath
+                           + "/" + hddData.labelName + ".txt";
+        TreeNode::saveTreeToFile(hddData.rootPtr, filePath);
+        hddData.isDirty = false;
+    }
+}
+
