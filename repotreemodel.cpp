@@ -15,9 +15,9 @@ void RepoTreeModel::CreateAndDeclare(const QModelIndex &index, QString hddLabel,
         // 取根节点
         treeNodePtr = _repoRootPtr;
     } else {
-        treeNodePtr =
-            std::dynamic_pointer_cast<RepoTreeNode>(TreeNode::get_shared_ptr(
-            static_cast<TreeNode *>(index.internalPointer())));
+        auto ptr = TreeNode::get_shared_ptr(
+            static_cast<TreeNode *>(index.internalPointer()));
+        treeNodePtr = ptr == nullptr ? _repoRootPtr : std::dynamic_pointer_cast<RepoTreeNode>(ptr);
     }
     // 检查当前节点是否是目录
     if (treeNodePtr->isDir == false)

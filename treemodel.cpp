@@ -9,7 +9,7 @@ TreeModel::~TreeModel() { this->_rootPtr = nullptr; }
 
 int TreeModel::rowCount(const QModelIndex &parent) const {
     if (!parent.isValid()) {
-        return _rootPtr->childs.size();
+        return 1;
     }
     TreeNode *ptr = static_cast<TreeNode *>(parent.internalPointer());
     return ptr->childs.size();
@@ -18,25 +18,34 @@ int TreeModel::rowCount(const QModelIndex &parent) const {
 int TreeModel::columnCount(const QModelIndex &parent) const { return 1; }
 
 QModelIndex TreeModel::parent(const QModelIndex &index) const {
-    TreeNode *child = static_cast<TreeNode *>(index.internalPointer());
-    auto parent = child->parent;
-    auto sp = parent.lock();
-    if (sp == this->_rootPtr) {
+    if (!index.isValid())
         return QModelIndex();
-    } else {
-        auto par_par_ptr = sp->parent.lock();
-        auto found = std::find(par_par_ptr->childs.begin(),
-                               par_par_ptr->childs.end(), par_par_ptr);
-        return createIndex(std::distance(par_par_ptr->childs.begin(), found), 0,
-                           sp.get());
+    TreeNode *ptr = static_cast<TreeNode *>(index.internalPointer());
+    if (ptr->parent.lock() == nullptr){
+        return QModelIndex();
     }
+    auto parentPtr = ptr->parent.lock();  // 这是要返回的父项的内部指针
+    // 求父项在他的父项中的row
+    auto parentparentPtr = parentPtr->parent.lock();
+    if (parentparentPtr == nullptr){
+        // 说明父项就是树的root
+        return createIndex(0, 0, _rootPtr.get());
+    }
+    auto childs = parentparentPtr->childs;
+    auto found = find_if(childs.begin(),
+                         childs.end(),
+                         [=](auto value){
+                             return value->name == parentPtr->name;
+                         });
+    auto dist = distance(childs.begin(), found);
+    return createIndex(dist, 0, ptr->parent.lock().get());
 }
 
 QModelIndex TreeModel::index(int row, int column,
                              const QModelIndex &parent) const {
     TreeNode *ptr;
     if (!parent.isValid())
-        ptr = this->_rootPtr.get();
+        return createIndex(row, column, _rootPtr.get());
     else {
         ptr = static_cast<TreeNode *>(parent.internalPointer());
     }
@@ -58,7 +67,11 @@ void TreeModel::MakeDir(const QModelIndex &index, QString name) {
         // 取根节点
         treeNodePtr = _rootPtr;
     } else {
-        treeNodePtr = TreeNode::get_shared_ptr(static_cast<TreeNode*>(index.internalPointer()));
+        treeNodePtr = TreeNode::get_shared_ptr(
+            static_cast<TreeNode *>(index.internalPointer()));
+        if (treeNodePtr == nullptr) {
+            treeNodePtr = _rootPtr;
+        }
     }
     // 判断有没有同名子目录
     if (find_if(treeNodePtr->childs.begin(), treeNodePtr->childs.end(),
