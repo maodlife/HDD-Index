@@ -27,6 +27,8 @@ private slots:
 
     void on_createDirBtn_clicked();
 
+    void on_AddToRepoAndDeclareBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
     Solution s;

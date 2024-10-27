@@ -103,6 +103,19 @@
      <string>创建子目录</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="AddToRepoAndDeclareBtn">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>570</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>新建至Repo，并声明持有</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -4,10 +4,12 @@
 #include "hddtreenode.h"
 #include "repotreenode.h"
 #include "treemodel.h"
+#include "repotreemodel.h"
 #include <vector>
 
 struct HddData {
     std::shared_ptr<HddTreeNode> rootPtr;
+    std::shared_ptr<TreeModel> model;  // todo: 继承下
     QString labelName;
     bool hasLoaded = false;
     bool isDirty = false;
@@ -17,7 +19,7 @@ struct HddData {
 
 struct RepoData {
     std::shared_ptr<RepoTreeNode> rootPtr;
-    std::shared_ptr<TreeModel> model;
+    std::shared_ptr<RepoTreeModel> model;
     bool hasLoaded = false;
     bool isDirty = false;
     void LoadJson(QString path);

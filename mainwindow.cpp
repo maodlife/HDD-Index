@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     // set hdd combobox
     setHddComboboxView();
     // set repository tree view
-    s.repoData.model = make_shared<TreeModel>(s.repoData.rootPtr);
+    s.repoData.model = make_shared<RepoTreeModel>(s.repoData.rootPtr);
     ui->repoTreeView->setModel(s.repoData.model.get());
 }
 
@@ -90,7 +90,7 @@ void MainWindow::on_createDirBtn_clicked()
         return;
     }
     auto currRepoTreeIdx = ui->repoTreeView->currentIndex();
-    s.repoData.model->MakeDir(currRepoTreeIdx, ui->createDirNameLineEdit->text(), s.repoData.rootPtr);
+    s.repoData.model->MakeDir(currRepoTreeIdx, ui->createDirNameLineEdit->text());
 }
 
 void MainWindow::setHddComboboxView()
@@ -99,5 +99,18 @@ void MainWindow::setHddComboboxView()
     for (const auto &hddData : std::as_const(s.hddDataList)) {
         ui->hddComboBox->addItem(hddData.labelName);
     }
+}
+
+
+void MainWindow::on_AddToRepoAndDeclareBtn_clicked()
+{
+    auto leftIndex = ui->repoTreeView->currentIndex();
+    auto rightIndex = ui->hddTreeView->currentIndex();
+    QString hddLabel = ui->hddComboBox->currentText();
+    auto rightTreeNodePtr = s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(rightIndex);
+    // 修改左边
+    s.repoData.model->CreateAndDeclare(leftIndex, hddLabel, rightTreeNodePtr);
+    // 修改右边
+    // todo
 }
 

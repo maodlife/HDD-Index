@@ -32,7 +32,10 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
     // 在index下创建子目录
-    void MakeDir(const QModelIndex &index, QString name, std::shared_ptr<TreeNode> rootPtr);
+    void MakeDir(const QModelIndex &index, QString name);
+
+    // 返回给定索引的智能指针
+    std::shared_ptr<TreeNode> GetSharedPtr(const QModelIndex &index);
 };
 
 #endif // TREEMODEL_H

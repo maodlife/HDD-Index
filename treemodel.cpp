@@ -52,7 +52,7 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const {
     return ptr->name;
 }
 
-void TreeModel::MakeDir(const QModelIndex &index, QString name, shared_ptr<TreeNode> rootPtr) {
+void TreeModel::MakeDir(const QModelIndex &index, QString name) {
     std::shared_ptr<TreeNode> treeNodePtr = nullptr; // index节点的treenode节点指针
     if (index.isValid() == false) {
         // 取根节点
@@ -73,6 +73,14 @@ void TreeModel::MakeDir(const QModelIndex &index, QString name, shared_ptr<TreeN
     auto point_idx = distance(treeNodePtr->childs.begin(), point);
     this->beginInsertRows(index, point_idx, point_idx);
     // 实际插入操作
-    treeNodePtr->AddChild(name, rootPtr);
+    treeNodePtr->AddChild(name, _rootPtr);
     this->endInsertRows();
+}
+
+std::shared_ptr<TreeNode> TreeModel::GetSharedPtr(const QModelIndex &index)
+{
+    if (index.isValid() == false)
+        return _rootPtr;
+    else
+        return TreeNode::get_shared_ptr(static_cast<TreeNode*>(index.internalPointer()));
 }
