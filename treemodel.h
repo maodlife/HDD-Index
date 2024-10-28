@@ -3,6 +3,7 @@
 
 #include "treenode.h"
 #include <QAbstractItemModel>
+#include <stack>
 
 // 用于给QTreeView显示TreeNode
 
@@ -36,6 +37,11 @@ public:
 
     // 返回给定索引的智能指针
     std::shared_ptr<TreeNode> GetSharedPtr(const QModelIndex &index);
+
+    // 查找treenode指针在model中的index
+    QModelIndex findIndexByTreeNode(std::shared_ptr<TreeNode> ptr);
+private:
+    QModelIndex findIndexByTreeNode(std::stack<QString> stack);
 };
 
 #endif // TREEMODEL_H

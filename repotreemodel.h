@@ -12,6 +12,9 @@ private:
 public:
     RepoTreeModel(std::shared_ptr<RepoTreeNode> ptr);
 
+    // 返回给定索引处的数据
+    QVariant data(const QModelIndex &index, int role) const override;
+
     // 在index下创建递归的子目录并声明持有
     void CreateAndDeclare(const QModelIndex &index, QString hddLabel, std::shared_ptr<TreeNode> hddNode);
 };

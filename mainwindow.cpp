@@ -69,19 +69,18 @@ void MainWindow::on_addNewBtn_clicked() {
     hddData.hasLoaded = true;
     hddData.isDirty = true;
     s.hddDataList.push_back(hddData);
-    TreeModel *model = new TreeModel(rootPtr);
-    ui->hddTreeView->setModel(model);
     // set hdd combobox
     setHddComboboxView();
 }
 
 void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
-    auto hddData = s.hddDataList[index];
+    auto &hddData = s.hddDataList[index];
     QString path = QCoreApplication::applicationDirPath() + JsonFileDirPath +
                    "/" + hddData.labelName + ".txt";
     hddData.TryLoadJson(path);
-    TreeModel *model = new TreeModel(hddData.rootPtr);
-    ui->hddTreeView->setModel(model);
+    if (hddData.model == nullptr)
+        hddData.model = make_shared<TreeModel>(hddData.rootPtr);
+    ui->hddTreeView->setModel(hddData.model.get());
 }
 
 void MainWindow::on_createDirBtn_clicked()
@@ -125,5 +124,39 @@ void MainWindow::on_saveHddBtn_clicked()
         TreeNode::saveTreeToFile(hddData.rootPtr, filePath);
         hddData.isDirty = false;
     }
+}
+
+void MainWindow::on_repoTreeView_clicked(const QModelIndex &index)
+{
+    // 显示saveData信息
+    auto ptr = s.repoData.model->GetSharedPtr(index);
+    ui->saveHddComboBox->clear();
+    shared_ptr<RepoTreeNode> repoPtr = dynamic_pointer_cast<RepoTreeNode>(ptr);
+    for (const auto &nodeSaveData : repoPtr->nodeSaveDatas){
+        ui->saveHddComboBox->addItem(nodeSaveData.hddLabel);
+    }
+}
+
+
+void MainWindow::on_jumpToSaveHddNodeBtn_clicked()
+{
+    // 跳转到HDD Tree View中对应节点
+    auto ptr = s.repoData.model->GetSharedPtr(ui->repoTreeView->currentIndex());
+    shared_ptr<RepoTreeNode> repoPtr = dynamic_pointer_cast<RepoTreeNode>(ptr);
+    auto selectHDDIndex = ui->saveHddComboBox->currentIndex();
+    auto &saveData = repoPtr->nodeSaveDatas[selectHDDIndex];
+    if (ui->hddComboBox->currentText() != saveData.hddLabel){
+        // 不是当前选择的HDD,切换过去
+        // todo
+        return;
+    }
+    auto targetPtr = TreeNode::getPtrFromPath(s.hddDataList[ui->hddComboBox->currentIndex()].rootPtr, saveData.treePath);
+    auto targetIndex = s.hddDataList[ui->hddComboBox->currentIndex()].model->findIndexByTreeNode(targetPtr);
+    // 展开到目标节点
+    ui->hddTreeView->expand(targetIndex.parent());
+    // 选中目标节点
+    ui->hddTreeView->setCurrentIndex(targetIndex);
+    // 确保目标节点可见
+    ui->hddTreeView->scrollTo(targetIndex);
 }
 

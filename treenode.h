@@ -47,6 +47,12 @@ public:
 
     // 返回裸指针的智能指针，不能是根节点, 否则返回nullptr
     static std::shared_ptr<TreeNode> get_shared_ptr(TreeNode* ptr);
+
+    // 从root开始到自己的Path
+    QString getPath();
+
+    // 传入Path返回节点指针，Path的开头是this的name
+    static std::shared_ptr<TreeNode> getPtrFromPath(std::shared_ptr<TreeNode> rootPtr, QString path);
 };
 
 template <typename NodeType>

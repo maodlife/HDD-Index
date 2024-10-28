@@ -37,7 +37,7 @@ void RepoTreeNode::AddChild(QString name, std::shared_ptr<TreeNode> rootPtr)
     shared_this->sortChildByName();
 }
 
-void RepoTreeNode::CopyHierarchy(std::shared_ptr<RepoTreeNode> repoRootPtr, std::shared_ptr<TreeNode> treeNodePtr)
+std::shared_ptr<RepoTreeNode> RepoTreeNode::CopyHierarchy(std::shared_ptr<RepoTreeNode> repoRootPtr, std::shared_ptr<TreeNode> treeNodePtr)
 {
     auto copied = make_shared<RepoTreeNode>();
     copied->name = treeNodePtr->name;
@@ -46,12 +46,13 @@ void RepoTreeNode::CopyHierarchy(std::shared_ptr<RepoTreeNode> repoRootPtr, std:
         // 非目录，叶子结点
         copied->parent = repoRootPtr;
         repoRootPtr->childs.push_back(copied);
-        return;
+        return copied;
     }
-    for (auto child : treeNodePtr->childs){
+    for (const auto &child : treeNodePtr->childs){
         RepoTreeNode::CopyHierarchy(copied, child);
     }
     copied->parent = repoRootPtr;
     repoRootPtr->childs.push_back(copied);
     repoRootPtr->sortChildByName();  // maybe not necessary
+    return copied;
 }

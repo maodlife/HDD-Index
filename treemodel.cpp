@@ -1,5 +1,6 @@
 #include "treemodel.h"
 #include <algorithm>
+#include <stack>
 
 using namespace std;
 
@@ -96,4 +97,34 @@ std::shared_ptr<TreeNode> TreeModel::GetSharedPtr(const QModelIndex &index)
         return _rootPtr;
     else
         return TreeNode::get_shared_ptr(static_cast<TreeNode*>(index.internalPointer()));
+}
+
+QModelIndex TreeModel::findIndexByTreeNode(std::shared_ptr<TreeNode> ptr)
+{
+    stack<QString> stack;
+    stack.push(ptr->name);
+    auto curr = ptr->parent.lock();
+    while (curr != nullptr) {
+        stack.push(curr->name);
+        curr = curr->parent.lock();
+    }
+    return findIndexByTreeNode(stack);
+}
+
+QModelIndex TreeModel::findIndexByTreeNode(std::stack<QString> stack) {
+    auto curr = QModelIndex();
+    while (!stack.empty()) {
+        auto name = stack.top();
+        stack.pop();
+        int rowCount = this->rowCount(curr);
+        for (int row = 0; row < rowCount; ++row) {
+            QModelIndex index = this->index(row, 0, curr);
+            TreeNode *currentNode = static_cast<TreeNode *>(index.internalPointer());
+            if (currentNode->name == name) {
+                curr = index;
+                break;
+            }
+        }
+    }
+    return curr;
 }

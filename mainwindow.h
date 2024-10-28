@@ -31,6 +31,10 @@ private slots:
 
     void on_saveHddBtn_clicked();
 
+    void on_repoTreeView_clicked(const QModelIndex &index);
+
+    void on_jumpToSaveHddNodeBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
     Solution s;

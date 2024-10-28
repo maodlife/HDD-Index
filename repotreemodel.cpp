@@ -7,6 +7,17 @@ RepoTreeModel::RepoTreeModel(std::shared_ptr<RepoTreeNode> ptr)
     _repoRootPtr = ptr;
 }
 
+QVariant RepoTreeModel::data(const QModelIndex &index, int role) const {
+    if (!index.isValid() || role != Qt::DisplayRole) {
+        return QVariant();
+    }
+    RepoTreeNode *ptr = static_cast<RepoTreeNode *>(index.internalPointer());
+    if (ptr->nodeSaveDatas.empty())
+        return ptr->name;
+    else
+        return "*" + ptr->name;
+}
+
 void RepoTreeModel::CreateAndDeclare(const QModelIndex &index, QString hddLabel,
                                      std::shared_ptr<TreeNode> hddNode) {
     // index节点的treenode节点指针
@@ -30,6 +41,11 @@ void RepoTreeModel::CreateAndDeclare(const QModelIndex &index, QString hddLabel,
     }
     // 更优雅的做法应该是递归调用beginInsertRows，但摆烂直接beginResetModel算了
     this->beginResetModel();
-    RepoTreeNode::CopyHierarchy(treeNodePtr, hddNode);
+    auto copied = RepoTreeNode::CopyHierarchy(treeNodePtr, hddNode);
+    // declare
+    NodeSaveData saveData;
+    saveData.hddLabel = hddLabel;
+    saveData.treePath = hddNode->getPath();
+    copied->nodeSaveDatas.push_back(saveData);
     this->endResetModel();
 }
