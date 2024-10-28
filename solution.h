@@ -3,13 +3,13 @@
 
 #include "hddtreenode.h"
 #include "repotreenode.h"
-#include "treemodel.h"
+#include "hddtreemodel.h"
 #include "repotreemodel.h"
 #include <vector>
 
 struct HddData {
     std::shared_ptr<HddTreeNode> rootPtr;
-    std::shared_ptr<TreeModel> model;  // todo: 继承下
+    std::shared_ptr<HddTreeModel> model;
     QString labelName;
     bool hasLoaded = false;
     bool isDirty = false;

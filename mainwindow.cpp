@@ -79,7 +79,7 @@ void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
                    "/" + hddData.labelName + ".txt";
     hddData.TryLoadJson(path);
     if (hddData.model == nullptr)
-        hddData.model = make_shared<TreeModel>(hddData.rootPtr);
+        hddData.model = make_shared<HddTreeModel>(hddData.rootPtr);
     ui->hddTreeView->setModel(hddData.model.get());
 }
 
@@ -100,19 +100,26 @@ void MainWindow::setHddComboboxView()
     }
 }
 
-
-void MainWindow::on_AddToRepoAndDeclareBtn_clicked()
-{
+// 新建至Repo，并声明持有
+void MainWindow::on_AddToRepoAndDeclareBtn_clicked() {
     auto leftIndex = ui->repoTreeView->currentIndex();
     auto rightIndex = ui->hddTreeView->currentIndex();
     QString hddLabel = ui->hddComboBox->currentText();
-    auto rightTreeNodePtr = s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(rightIndex);
+    auto rightTreeNodePtr =
+        s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(
+        rightIndex);
     // 修改左边
-    s.repoData.model->CreateAndDeclare(leftIndex, hddLabel, rightTreeNodePtr);
+    auto newNode = s.repoData.model->CreateAndDeclare(leftIndex, hddLabel, rightTreeNodePtr);
     // 修改右边
-    // todo
+    s.hddDataList[ui->hddComboBox->currentIndex()].model->Declare(
+        rightIndex, newNode->getPath());
 }
 
+// 声明持有
+void MainWindow::on_declareBtn_clicked()
+{
+    // todo
+}
 
 void MainWindow::on_saveHddBtn_clicked()
 {
@@ -160,3 +167,13 @@ void MainWindow::on_jumpToSaveHddNodeBtn_clicked()
     ui->hddTreeView->scrollTo(targetIndex);
 }
 
+// 跳转到持有的Repo节点
+void MainWindow::on_jumpToRepoNodeBtn_clicked()
+{
+    auto hddTreeViewIndex = ui->hddTreeView->currentIndex();
+    if (hddTreeViewIndex.isValid() == false)
+        return;
+    auto treeNodePtr = s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(hddTreeViewIndex);
+    auto hddTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(treeNodePtr);
+
+}

@@ -217,6 +217,19 @@
      <string>删除当前</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="jumpToRepoNodeBtn">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>570</y>
+      <width>131</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>跳转到持有的Repo</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

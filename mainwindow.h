@@ -35,6 +35,10 @@ private slots:
 
     void on_jumpToSaveHddNodeBtn_clicked();
 
+    void on_jumpToRepoNodeBtn_clicked();
+
+    void on_declareBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
     Solution s;

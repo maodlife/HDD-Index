@@ -94,9 +94,12 @@ void TreeModel::MakeDir(const QModelIndex &index, QString name) {
 std::shared_ptr<TreeNode> TreeModel::GetSharedPtr(const QModelIndex &index)
 {
     if (index.isValid() == false)
+        return nullptr;
+    TreeNode *ptr = static_cast<TreeNode*>(index.internalPointer());
+    if (ptr->parent.lock() == nullptr){
         return _rootPtr;
-    else
-        return TreeNode::get_shared_ptr(static_cast<TreeNode*>(index.internalPointer()));
+    }
+    return TreeNode::get_shared_ptr(ptr);
 }
 
 QModelIndex TreeModel::findIndexByTreeNode(std::shared_ptr<TreeNode> ptr)

@@ -16,7 +16,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
     // 在index下创建递归的子目录并声明持有
-    void CreateAndDeclare(const QModelIndex &index, QString hddLabel, std::shared_ptr<TreeNode> hddNode);
+    std::shared_ptr<TreeNode> CreateAndDeclare(const QModelIndex &index, QString hddLabel, std::shared_ptr<TreeNode> hddNode);
 };
 
 #endif // REPOTREEMODEL_H

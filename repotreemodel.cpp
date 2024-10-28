@@ -18,7 +18,7 @@ QVariant RepoTreeModel::data(const QModelIndex &index, int role) const {
         return "*" + ptr->name;
 }
 
-void RepoTreeModel::CreateAndDeclare(const QModelIndex &index, QString hddLabel,
+std::shared_ptr<TreeNode> RepoTreeModel::CreateAndDeclare(const QModelIndex &index, QString hddLabel,
                                      std::shared_ptr<TreeNode> hddNode) {
     // index节点的treenode节点指针
     std::shared_ptr<RepoTreeNode> treeNodePtr = nullptr;
@@ -32,12 +32,12 @@ void RepoTreeModel::CreateAndDeclare(const QModelIndex &index, QString hddLabel,
     }
     // 检查当前节点是否是目录
     if (treeNodePtr->isDir == false)
-        return;
+        return nullptr;
     // 检查是否存在同名子目录
     if (find_if(treeNodePtr->childs.begin(), treeNodePtr->childs.end(),
                 [hddLabel](auto value) { return value->name == hddLabel; }) !=
         treeNodePtr->childs.end()) {
-        return;
+        return nullptr;
     }
     // 更优雅的做法应该是递归调用beginInsertRows，但摆烂直接beginResetModel算了
     this->beginResetModel();
@@ -48,4 +48,5 @@ void RepoTreeModel::CreateAndDeclare(const QModelIndex &index, QString hddLabel,
     saveData.treePath = hddNode->getPath();
     copied->nodeSaveDatas.push_back(saveData);
     this->endResetModel();
+    return copied;
 }
