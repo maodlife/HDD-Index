@@ -120,6 +120,14 @@ void MainWindow::on_AddToRepoAndDeclareBtn_clicked() {
     s.hddDataList[ui->hddComboBox->currentIndex()].model->Declare(
         rightIndex, newNode->getPath());
     s.hddDataList[ui->hddComboBox->currentIndex()].isDirty = true;
+    // 左边展开
+    auto targetRepoIndex = s.repoData.model->findIndexByTreeNode(newNode);
+    // 展开到目标节点
+    ui->repoTreeView->expand(targetRepoIndex.parent());
+    // 选中目标节点
+    // ui->repoTreeView->setCurrentIndex(targetRepoIndex);
+    // 确保目标节点可见
+    ui->repoTreeView->scrollTo(targetRepoIndex);
 }
 
 // 声明持有
