@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() { delete ui; }
 
+// 添加HDD
 void MainWindow::on_addNewBtn_clicked() {
     auto hddLabel = ui->hddLabelInputTextEdit->toPlainText();
     // empty label
@@ -73,6 +74,7 @@ void MainWindow::on_addNewBtn_clicked() {
     setHddComboboxView();
 }
 
+// 选择hddComboBox
 void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
     auto &hddData = s.hddDataList[index];
     QString path = QCoreApplication::applicationDirPath() + JsonFileDirPath +
@@ -83,6 +85,7 @@ void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
     ui->hddTreeView->setModel(hddData.model.get());
 }
 
+// 创建子目录
 void MainWindow::on_createDirBtn_clicked()
 {
     if (ui->createDirNameLineEdit->text().isEmpty()){
@@ -121,6 +124,7 @@ void MainWindow::on_declareBtn_clicked()
     // todo
 }
 
+// 保存所有HDD
 void MainWindow::on_saveHddBtn_clicked()
 {
     for (auto hddData : s.hddDataList){
@@ -133,6 +137,7 @@ void MainWindow::on_saveHddBtn_clicked()
     }
 }
 
+// repo tree view点击
 void MainWindow::on_repoTreeView_clicked(const QModelIndex &index)
 {
     // 显示saveData信息
@@ -144,7 +149,7 @@ void MainWindow::on_repoTreeView_clicked(const QModelIndex &index)
     }
 }
 
-
+// 跳转到存储了这个节点的HDD
 void MainWindow::on_jumpToSaveHddNodeBtn_clicked()
 {
     // 跳转到HDD Tree View中对应节点
