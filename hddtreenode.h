@@ -15,6 +15,8 @@ public:
 
     DeclareSaveData saveData;
 
+    QJsonObject toJsonObject() const override;
+
     // 读文件夹路径, 并访问磁盘目录, 构造一棵树
     static std::shared_ptr<HddTreeNode> CreateTreeNodeByDirPath(QString path);
 

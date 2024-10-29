@@ -6,6 +6,15 @@ using namespace std;
 
 HddTreeNode::HddTreeNode() : TreeNode() {}
 
+QJsonObject HddTreeNode::toJsonObject() const
+{
+    auto json = TreeNode::toJsonObject();
+    QJsonObject saveDataJson;
+    saveDataJson["path"] = this->saveData.path;
+    json["saveData"] = saveDataJson;
+    return json;
+}
+
 std::shared_ptr<HddTreeNode> HddTreeNode::CreateTreeNodeByDirPath(QString path)
 {
     QDir baseDir(path);
@@ -38,5 +47,5 @@ std::shared_ptr<HddTreeNode> HddTreeNode::CreateTreeNodeByDirPath(QString path)
 
 void HddTreeNode::fromJsonObjectExtend(const QJsonObject &json)
 {
-
+    this->saveData.path = json["saveData"]["path"].toString();
 }

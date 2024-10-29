@@ -26,7 +26,14 @@ QJsonObject RepoTreeNode::toJsonObject() const
 
 void RepoTreeNode::fromJsonObjectExtend(const QJsonObject &json)
 {
-
+    auto saveDataArray = json["nodeSaveDatas"].toArray();
+    for (const auto &value : saveDataArray){
+        QJsonObject saveDataJson = value.toObject();
+        NodeSaveData saveData;
+        saveData.hddLabel = saveDataJson["hddLabel"].toString();
+        saveData.treePath = saveDataJson["treePath"].toString();
+        this->nodeSaveDatas.push_back(saveData);
+    }
 }
 
 void RepoTreeNode::AddChild(QString name, std::shared_ptr<TreeNode> rootPtr)

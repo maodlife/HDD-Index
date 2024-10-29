@@ -184,7 +184,7 @@ void MainWindow::on_jumpToRepoNodeBtn_clicked()
         return;
     auto treeNodePtr = s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(hddTreeViewIndex);
     auto hddTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(treeNodePtr);
-
+    // todo
 }
 
 // 保存Repository到Json文件
