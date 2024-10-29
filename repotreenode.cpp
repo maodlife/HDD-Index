@@ -7,7 +7,21 @@ RepoTreeNode::RepoTreeNode() : TreeNode() {}
 
 QJsonObject RepoTreeNode::toJsonObject() const
 {
+    QJsonObject json = TreeNode::toJsonObject();
+    json["name"] = name;
+    json["dirPath"] = dirPath;
+    json["isDir"] = isDir;
 
+    QJsonArray saveDataArray;
+    for (const auto &saveData : nodeSaveDatas) {
+        QJsonObject saveDataJson;
+        saveDataJson["hddLabel"] = saveData.hddLabel;
+        saveDataJson["treePath"] = saveData.treePath;
+        saveDataArray.append(saveDataJson);
+    }
+    json["nodeSaveDatas"] = saveDataArray;
+
+    return json;
 }
 
 void RepoTreeNode::fromJsonObjectExtend(const QJsonObject &json)

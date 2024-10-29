@@ -113,9 +113,13 @@ void MainWindow::on_AddToRepoAndDeclareBtn_clicked() {
         rightIndex);
     // 修改左边
     auto newNode = s.repoData.model->CreateAndDeclare(leftIndex, hddLabel, rightTreeNodePtr);
+    if (newNode != nullptr) {
+        s.repoData.isDirty = true;
+    }
     // 修改右边
     s.hddDataList[ui->hddComboBox->currentIndex()].model->Declare(
         rightIndex, newNode->getPath());
+    s.hddDataList[ui->hddComboBox->currentIndex()].isDirty = true;
 }
 
 // 声明持有
@@ -182,3 +186,15 @@ void MainWindow::on_jumpToRepoNodeBtn_clicked()
     auto hddTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(treeNodePtr);
 
 }
+
+// 保存Repository到Json文件
+void MainWindow::on_pushButton_3_clicked()
+{
+    if (s.repoData.isDirty == false)
+        return;
+    QString filePath = QCoreApplication::applicationDirPath() + JsonFileDirPath
+                       + "/" + RepoJsonFileName;
+    TreeNode::saveTreeToFile(s.repoData.rootPtr, filePath);
+    s.repoData.isDirty = false;
+}
+

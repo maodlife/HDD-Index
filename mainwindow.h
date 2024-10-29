@@ -48,6 +48,9 @@ private slots:
     // 声明持有
     void on_declareBtn_clicked();
 
+    // 保存Repository到Json文件
+    void on_pushButton_3_clicked();
+
 private:
     Ui::MainWindow *ui;
     Solution s;
