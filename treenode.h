@@ -61,6 +61,11 @@ void TreeNode::saveTreeToFile(const std::shared_ptr<NodeType> &root,
                               const QString &filePath) {
     QJsonDocument doc(root->toJsonObject());
     QFile file(filePath);
+    QDir dir;
+    if (!dir.mkpath(QFileInfo(filePath).path())) {  // 创建所有必要的中间路径
+        qWarning("Failed to create directory path");
+        return;
+    }
     if (file.open(QIODevice::WriteOnly)) {
         file.write(doc.toJson());
         file.close();
