@@ -184,7 +184,15 @@ void MainWindow::on_jumpToRepoNodeBtn_clicked()
         return;
     auto treeNodePtr = s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(hddTreeViewIndex);
     auto hddTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(treeNodePtr);
-    // todo
+    auto repoNodePath = hddTreeNodePtr->saveData.path;
+    auto repoNode = TreeNode::getPtrFromPath(s.repoData.rootPtr, repoNodePath);
+    auto targetRepoIndex = s.repoData.model->findIndexByTreeNode(repoNode);
+    // 展开到目标节点
+    ui->repoTreeView->expand(targetRepoIndex.parent());
+    // 选中目标节点
+    ui->repoTreeView->setCurrentIndex(targetRepoIndex);
+    // 确保目标节点可见
+    ui->repoTreeView->scrollTo(targetRepoIndex);
 }
 
 // 保存Repository到Json文件
