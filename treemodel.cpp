@@ -114,6 +114,23 @@ QModelIndex TreeModel::findIndexByTreeNode(std::shared_ptr<TreeNode> ptr)
     return findIndexByTreeNode(stack);
 }
 
+void TreeModel::removeTreeNode(const QModelIndex &index)
+{
+    auto treeNode = GetSharedPtr(index);
+    if (treeNode == nullptr)
+        return;
+    auto parent = treeNode->parent.lock();
+    auto found = find_if(parent->childs.begin(),
+                         parent->childs.end(),
+                         [=](auto &value){
+                             return value->name == treeNode->name;
+                         });
+    auto row = distance(parent->childs.begin(), found);
+    this->beginRemoveRows(index.parent(), row, row);
+    parent->childs.erase(found);
+    this->endRemoveRows();
+}
+
 QModelIndex TreeModel::findIndexByTreeNode(std::stack<QString> stack) {
     auto curr = QModelIndex();
     while (!stack.empty()) {

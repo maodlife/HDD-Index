@@ -40,6 +40,9 @@ public:
 
     // 查找treenode指针在model中的index
     QModelIndex findIndexByTreeNode(std::shared_ptr<TreeNode> ptr);
+
+    // 删除节点及子树
+    void removeTreeNode(const QModelIndex &index);
 private:
     QModelIndex findIndexByTreeNode(std::stack<QString> stack);
 };
