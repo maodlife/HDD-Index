@@ -51,6 +51,9 @@ private slots:
     // 保存Repository到Json文件
     void on_pushButton_3_clicked();
 
+    // 删除repo节点
+    void on_deleteRepoNodeBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
     Solution s;

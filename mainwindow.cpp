@@ -214,3 +214,13 @@ void MainWindow::on_pushButton_3_clicked()
     s.repoData.isDirty = false;
 }
 
+// 删除repo节点
+void MainWindow::on_deleteRepoNodeBtn_clicked()
+{
+    auto leftIndex = ui->repoTreeView->currentIndex();
+    // auto repoTreeNode = s.repoData.model->GetSharedPtr(leftIndex);
+    // todo: 查找saveData信息并移除，先不做了
+    s.repoData.model->removeTreeNode(leftIndex);
+    s.repoData.isDirty = true;
+}
+
