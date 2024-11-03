@@ -76,6 +76,8 @@ void MainWindow::on_addNewBtn_clicked() {
 
 // 选择hddComboBox
 void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
+    if (index < 0 || index >= s.hddDataList.size())
+        return;
     auto &hddData = s.hddDataList[index];
     QString path = QCoreApplication::applicationDirPath() + JsonFileDirPath +
                    "/" + hddData.labelName + ".txt";
@@ -111,6 +113,9 @@ void MainWindow::on_AddToRepoAndDeclareBtn_clicked() {
     auto rightTreeNodePtr =
         s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(
         rightIndex);
+    std::shared_ptr<HddTreeNode> hddTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(rightTreeNodePtr);
+    if (hddTreeNodePtr->saveData.path.isEmpty() == false)
+        return;
     // 修改左边
     auto newNode = s.repoData.model->CreateAndDeclare(leftIndex, hddLabel, rightTreeNodePtr);
     if (newNode != nullptr) {
@@ -125,7 +130,7 @@ void MainWindow::on_AddToRepoAndDeclareBtn_clicked() {
     // 展开到目标节点
     ui->repoTreeView->expand(targetRepoIndex.parent());
     // 选中目标节点
-    // ui->repoTreeView->setCurrentIndex(targetRepoIndex);
+    ui->repoTreeView->setCurrentIndex(targetRepoIndex);
     // 确保目标节点可见
     ui->repoTreeView->scrollTo(targetRepoIndex);
 }
