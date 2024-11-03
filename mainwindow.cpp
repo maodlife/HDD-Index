@@ -1,10 +1,10 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include "treemodel.h"
 #include "treenode.h"
+#include <QDebug>
 #include <QDir>
 #include <QFileDialog>
-#include <QDebug>
+#include <QMessageBox>
 #include <algorithm>
 
 using namespace std;
@@ -136,9 +136,39 @@ void MainWindow::on_AddToRepoAndDeclareBtn_clicked() {
 }
 
 // 声明持有
-void MainWindow::on_declareBtn_clicked()
-{
-    // todo
+void MainWindow::on_declareBtn_clicked() {
+    auto leftIndex = ui->repoTreeView->currentIndex();
+    auto rightIndex = ui->hddTreeView->currentIndex();
+    QString hddLabel = ui->hddComboBox->currentText();
+    auto leftTreeNodePtr = dynamic_pointer_cast<RepoTreeNode>(
+        s.repoData.model->GetSharedPtr(leftIndex));
+    auto rightTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(
+        s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(
+            rightIndex));
+    if (!rightTreeNodePtr->saveData.path.isEmpty()){
+        QMessageBox::information(this, "提示", "不能声明持有");
+        return;
+    }
+    bool checkCanDeclare =
+        Solution::CheckCanDeclare(leftTreeNodePtr, rightTreeNodePtr);
+    if (!checkCanDeclare) {
+        QMessageBox::information(this, "提示", "不能声明持有");
+        return;
+    }
+    // 修改左边
+    s.repoData.model->AddDeclare(leftIndex, hddLabel, rightTreeNodePtr);
+    // 修改右边
+    s.hddDataList[ui->hddComboBox->currentIndex()].model->Declare(
+        rightIndex, leftTreeNodePtr->getPath());
+    s.hddDataList[ui->hddComboBox->currentIndex()].isDirty = true;
+    // 左边展开
+    auto targetRepoIndex = s.repoData.model->findIndexByTreeNode(leftTreeNodePtr);
+    // 展开到目标节点
+    ui->repoTreeView->expand(targetRepoIndex.parent());
+    // 选中目标节点
+    ui->repoTreeView->setCurrentIndex(targetRepoIndex);
+    // 确保目标节点可见
+    ui->repoTreeView->scrollTo(targetRepoIndex);
 }
 
 // 保存所有HDD
