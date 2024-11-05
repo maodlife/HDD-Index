@@ -20,6 +20,9 @@ public:
     static const QString JsonFileDirPath;
     static const QString RepoJsonFileName;
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private slots:
     // 添加HDD
     void on_addNewBtn_clicked();

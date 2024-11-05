@@ -48,6 +48,27 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() { delete ui; }
 
+void MainWindow::closeEvent(QCloseEvent *event) {
+    bool haveUnsaved = false;
+    if (s.repoData.isDirty)
+        haveUnsaved = true;
+    for (const auto &hdd : s.hddDataList) {
+        if (hdd.isDirty)
+            haveUnsaved = true;
+    }
+    if (haveUnsaved) { // 检查是否有未保存的内容
+        QMessageBox::StandardButton reply = QMessageBox::warning(
+            this, tr("未保存的更改"), tr("有未保存的更改。你确定要退出吗？"),
+            QMessageBox::Yes | QMessageBox::No);
+
+        if (reply == QMessageBox::No) {
+            event->ignore(); // 取消关闭
+            return;
+        }
+    }
+    event->accept(); // 允许关闭
+}
+
 // 添加HDD
 void MainWindow::on_addNewBtn_clicked() {
     auto hddLabel = ui->hddLabelInputTextEdit->toPlainText();
