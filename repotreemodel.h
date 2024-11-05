@@ -20,6 +20,8 @@ public:
 
     // 新增声明持有
     void AddDeclare(const QModelIndex &index, QString hddLabel, std::shared_ptr<TreeNode> hddNode);
+
+    void CutRepoNode(std::shared_ptr<RepoTreeNode> repoNode, std::shared_ptr<RepoTreeNode> targetParentNode);
 };
 
 #endif // REPOTREEMODEL_H

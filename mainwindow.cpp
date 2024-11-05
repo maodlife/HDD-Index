@@ -280,3 +280,25 @@ void MainWindow::on_deleteRepoNodeBtn_clicked()
     s.repoData.isDirty = true;
 }
 
+// 剪切repo节点
+void MainWindow::on_cutBtn_clicked()
+{
+    if (s.currCutRepoNode == nullptr){
+        auto leftIndex = ui->repoTreeView->currentIndex();
+        s.currCutRepoNode = dynamic_pointer_cast<RepoTreeNode>(s.repoData.model->GetSharedPtr(leftIndex));
+        ui->cutBtn->setText("Paste");
+    }
+    else{
+        auto leftIndex = ui->repoTreeView->currentIndex();
+        auto newParentNode = dynamic_pointer_cast<RepoTreeNode>(s.repoData.model->GetSharedPtr(leftIndex));
+        // todo
+        ui->cutBtn->setText("Cut");
+    }
+}
+
+// 重命名repo节点
+void MainWindow::on_renameRepoBtn_clicked()
+{
+    // 实现上可以做成原地剪切成另一个名字
+}
+

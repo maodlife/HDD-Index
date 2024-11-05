@@ -57,6 +57,12 @@ private slots:
     // 删除repo节点
     void on_deleteRepoNodeBtn_clicked();
 
+    // 剪切repo节点
+    void on_cutBtn_clicked();
+
+    // 重命名repo节点
+    void on_renameRepoBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
     Solution s;

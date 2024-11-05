@@ -67,3 +67,15 @@ void RepoTreeModel::AddDeclare(const QModelIndex &index, QString hddLabel,
     this->endResetModel();
     return;
 }
+
+void RepoTreeModel::CutRepoNode(
+    std::shared_ptr<RepoTreeNode> repoNode,
+    std::shared_ptr<RepoTreeNode> targetParentNode) {
+    if (find_if(targetParentNode->childs.begin(), targetParentNode->childs.end(),
+                [=](const auto &value) {
+                    return value->name == repoNode->name;
+        }) != targetParentNode->childs.end()) {
+        return;
+    }
+
+}
