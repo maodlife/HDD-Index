@@ -281,16 +281,19 @@ void MainWindow::on_deleteRepoNodeBtn_clicked()
 }
 
 // 剪切repo节点
-void MainWindow::on_cutBtn_clicked()
-{
-    if (s.currCutRepoNode == nullptr){
+void MainWindow::on_cutBtn_clicked() {
+    if (s.currCutRepoNode == nullptr) {
         auto leftIndex = ui->repoTreeView->currentIndex();
-        s.currCutRepoNode = dynamic_pointer_cast<RepoTreeNode>(s.repoData.model->GetSharedPtr(leftIndex));
+        s.currCutRepoNode = dynamic_pointer_cast<RepoTreeNode>(
+            s.repoData.model->GetSharedPtr(leftIndex));
         ui->cutBtn->setText("Paste");
-    }
-    else{
+    } else {
         auto leftIndex = ui->repoTreeView->currentIndex();
-        auto newParentNode = dynamic_pointer_cast<RepoTreeNode>(s.repoData.model->GetSharedPtr(leftIndex));
+        auto newParentNode = dynamic_pointer_cast<RepoTreeNode>(
+            s.repoData.model->GetSharedPtr(leftIndex));
+        s.repoData.model->CutRepoNode(s.currCutRepoNode, newParentNode);
+        auto changedSaveDataRepoNode = TreeNode::findIfInTree(
+            s.currCutRepoNode, [](const auto &value) { return false; });
         // todo
         ui->cutBtn->setText("Cut");
     }

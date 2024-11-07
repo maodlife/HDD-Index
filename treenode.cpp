@@ -77,3 +77,11 @@ TreeNode::getPtrFromPath(std::shared_ptr<TreeNode> rootPtr, QString path) {
     }
     return curr;
 }
+
+std::vector<std::shared_ptr<TreeNode>> TreeNode::findIfInTree(
+    std::shared_ptr<TreeNode> rootPtr,
+    std::function<bool(std::shared_ptr<TreeNode>)> predicate) {
+    std::vector<std::shared_ptr<TreeNode>> ret;
+    // todo
+    return ret;
+}

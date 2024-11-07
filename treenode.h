@@ -53,6 +53,11 @@ public:
 
     // 传入Path返回节点指针，Path的开头是this的name
     static std::shared_ptr<TreeNode> getPtrFromPath(std::shared_ptr<TreeNode> rootPtr, QString path);
+
+    // 从指定节点递归查找，返回所有满足条件的指针
+    static std::vector<std::shared_ptr<TreeNode>>
+    findIfInTree(std::shared_ptr<TreeNode> rootPtr,
+                 std::function<bool(std::shared_ptr<TreeNode>)> predicate);
 };
 
 template <typename NodeType>

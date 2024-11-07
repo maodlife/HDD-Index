@@ -77,5 +77,9 @@ void RepoTreeModel::CutRepoNode(
         }) != targetParentNode->childs.end()) {
         return;
     }
-
+    this->beginResetModel();
+    repoNode->parent = targetParentNode;
+    targetParentNode->childs.push_back(repoNode);
+    targetParentNode->sortChildByName();
+    this->endResetModel();
 }
