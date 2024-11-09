@@ -291,9 +291,15 @@ void MainWindow::on_cutBtn_clicked() {
         auto leftIndex = ui->repoTreeView->currentIndex();
         auto newParentNode = dynamic_pointer_cast<RepoTreeNode>(
             s.repoData.model->GetSharedPtr(leftIndex));
+        // 修改左边
         s.repoData.model->CutRepoNode(s.currCutRepoNode, newParentNode);
+        // 寻找受影响的saveDatas repo node
         auto changedSaveDataRepoNode = TreeNode::findIfInTree(
-            s.currCutRepoNode, [](const auto &value) { return false; });
+            s.currCutRepoNode,
+            [](const auto &value) {
+                auto repoValue = dynamic_pointer_cast<RepoTreeNode>(value);
+                return repoValue->nodeSaveDatas.size() != 0;
+            });
         // todo
         ui->cutBtn->setText("Cut");
     }
