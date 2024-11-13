@@ -17,8 +17,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    static const QString JsonFileDirPath;
+    static const QString JsonFileDirName;
     static const QString RepoJsonFileName;
+    QString JsonFileDirPath = "/Users/maodlife/Code/QtRepo/HDD-Index";
 
 protected:
     void closeEvent(QCloseEvent *event) override;

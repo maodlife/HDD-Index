@@ -9,19 +9,22 @@
 
 using namespace std;
 
-const QString MainWindow::JsonFileDirPath = "/JsonFiles";
+const QString MainWindow::JsonFileDirName = "/JsonFiles";
 const QString MainWindow::RepoJsonFileName = "RepoTreeData.txt";
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    if (JsonFileDirPath.size() == 0){
+        JsonFileDirPath = QCoreApplication::applicationDirPath();
+    }
     // load json file
-    QDir jsonFileDir(QCoreApplication::applicationDirPath() + JsonFileDirPath);
+    QDir jsonFileDir(JsonFileDirPath + JsonFileDirName);
     auto fileList = jsonFileDir.entryInfoList(QDir::Files);
     for (const auto &file : std::as_const(fileList)) {
         if (file.fileName() == RepoJsonFileName) {
             // repository
-            QString path = QCoreApplication::applicationDirPath() + JsonFileDirPath +
+            QString path = JsonFileDirPath + JsonFileDirName +
                            "/" + RepoJsonFileName;
             s.repoData.TryLoadJson(path);
         } else {
@@ -100,7 +103,7 @@ void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
     if (index < 0 || index >= s.hddDataList.size())
         return;
     auto &hddData = s.hddDataList[index];
-    QString path = QCoreApplication::applicationDirPath() + JsonFileDirPath +
+    QString path = JsonFileDirPath + JsonFileDirName +
                    "/" + hddData.labelName + ".txt";
     hddData.TryLoadJson(path);
     if (hddData.model == nullptr)
@@ -198,7 +201,7 @@ void MainWindow::on_saveHddBtn_clicked()
     for (auto hddData : s.hddDataList){
         if (hddData.isDirty == false)
             continue;
-        QString filePath = QCoreApplication::applicationDirPath() + JsonFileDirPath
+        QString filePath = JsonFileDirPath + JsonFileDirName
                            + "/" + hddData.labelName + ".txt";
         TreeNode::saveTreeToFile(hddData.rootPtr, filePath);
         hddData.isDirty = false;
@@ -264,7 +267,7 @@ void MainWindow::on_pushButton_3_clicked()
 {
     if (s.repoData.isDirty == false)
         return;
-    QString filePath = QCoreApplication::applicationDirPath() + JsonFileDirPath
+    QString filePath = JsonFileDirPath+ JsonFileDirName
                        + "/" + RepoJsonFileName;
     TreeNode::saveTreeToFile(s.repoData.rootPtr, filePath);
     s.repoData.isDirty = false;
