@@ -71,6 +71,7 @@ void RepoTreeModel::AddDeclare(const QModelIndex &index, QString hddLabel,
 void RepoTreeModel::CutRepoNode(
     std::shared_ptr<RepoTreeNode> repoNode,
     std::shared_ptr<RepoTreeNode> targetParentNode) {
+    // 如果已有同名文件夹，则跳过
     if (find_if(targetParentNode->childs.begin(), targetParentNode->childs.end(),
                 [=](const auto &value) {
                     return value->name == repoNode->name;
@@ -78,7 +79,14 @@ void RepoTreeModel::CutRepoNode(
         return;
     }
     this->beginResetModel();
+    // 原本的父节点里删掉
+    auto parent = repoNode->parent.lock();
+    parent->childs.erase(find_if(
+        parent->childs.begin(), parent->childs.end(),
+        [=](const auto &value) { return value->name == repoNode->name; }));
+    // 修改parent指针
     repoNode->parent = targetParentNode;
+    // 新的父节点里增加
     targetParentNode->childs.push_back(repoNode);
     targetParentNode->sortChildByName();
     this->endResetModel();

@@ -296,15 +296,36 @@ void MainWindow::on_cutBtn_clicked() {
             s.repoData.model->GetSharedPtr(leftIndex));
         // 修改左边
         s.repoData.model->CutRepoNode(s.currCutRepoNode, newParentNode);
+        s.repoData.isDirty = true;
         // 寻找受影响的saveDatas repo node
-        auto changedSaveDataRepoNode = TreeNode::findIfInTree(
-            s.currCutRepoNode,
-            [](const auto &value) {
-                auto repoValue = dynamic_pointer_cast<RepoTreeNode>(value);
-                return repoValue->nodeSaveDatas.size() != 0;
-            });
-        // todo
+        auto changedSaveDataRepoNodes =
+            TreeNode::findIfInTree(s.currCutRepoNode, [](const auto &value) {
+            auto repoValue = dynamic_pointer_cast<RepoTreeNode>(value);
+            return repoValue->nodeSaveDatas.size() != 0;
+        });
+        // 修改右边
+        for (const auto &repoNode : changedSaveDataRepoNodes) {
+            auto leftNewPathStr = repoNode->getPath();
+            auto repoTreeNode = dynamic_pointer_cast<RepoTreeNode>(repoNode);
+            for (const auto &saveData : repoTreeNode->nodeSaveDatas){
+                auto hddLabel = saveData.hddLabel;
+                auto &hddData = *find_if(s.hddDataList.begin(), s.hddDataList.end(), [=](const auto &value){
+                    return value.labelName == hddLabel;
+                });
+                if (!hddData.hasLoaded) {
+                    QString path = JsonFileDirPath + JsonFileDirName + "/" +
+                                   hddData.labelName + ".txt";
+                    hddData.TryLoadJson(path);
+                }
+                auto targetPtr = TreeNode::getPtrFromPath(
+                    hddData.rootPtr, saveData.treePath);
+                auto hddTargetPtr = dynamic_pointer_cast<HddTreeNode>(targetPtr);
+                hddTargetPtr->saveData.path = leftNewPathStr;
+                hddData.isDirty = true;
+            }
+        }
         ui->cutBtn->setText("Cut");
+        // todo: 左边展开
     }
 }
 
