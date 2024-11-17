@@ -57,15 +57,20 @@ MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     bool haveUnsaved = false;
-    if (s.repoData.isDirty)
+    QString msg;
+    if (s.repoData.isDirty) {
+        msg += "repo\n";
         haveUnsaved = true;
+    }
     for (const auto &hdd : s.hddDataList) {
-        if (hdd.isDirty)
+        if (hdd.isDirty) {
+            msg += hdd.labelName + "\n";
             haveUnsaved = true;
+        }
     }
     if (haveUnsaved) { // 检查是否有未保存的内容
         QMessageBox::StandardButton reply = QMessageBox::warning(
-            this, tr("未保存的更改"), tr("有未保存的更改。你确定要退出吗？"),
+            this, tr("未保存的更改"), tr("有未保存的更改。你确定要退出吗？\n") + msg,
             QMessageBox::Yes | QMessageBox::No);
 
         if (reply == QMessageBox::No) {
