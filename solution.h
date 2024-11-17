@@ -72,6 +72,8 @@ public:
     // 检查右边能否声明持有左边，要求左边的所有文件和结构都在右边中，但右边可以有多余的
     static bool CheckCanDeclare(std::shared_ptr<TreeNode> leftPtr, std::shared_ptr<TreeNode> rightPtr);
 
+    void ExpandAndSetTreeViewNode(QTreeView *treeView, QModelIndex &index);
+
 private:
 };
 

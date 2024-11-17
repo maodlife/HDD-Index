@@ -27,6 +27,16 @@ bool Solution::CheckCanDeclare(std::shared_ptr<TreeNode> leftPtr,
     return true;
 }
 
+void Solution::ExpandAndSetTreeViewNode(QTreeView *treeView, QModelIndex &index)
+{
+    // 展开到目标节点
+    treeView->expand(index.parent());
+    // 选中目标节点
+    treeView->setCurrentIndex(index);
+    // 确保目标节点可见
+    treeView->scrollTo(index);
+}
+
 void HddData::LoadJson(QString path) {
     auto rootPtr = TreeNode::loadTreeFromFile<HddTreeNode>(path);
     this->rootPtr = rootPtr;

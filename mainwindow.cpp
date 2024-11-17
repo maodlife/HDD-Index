@@ -312,7 +312,7 @@ void MainWindow::on_cutBtn_clicked() {
         auto leftIndex = s.uiData->repoTreeView->currentIndex();
         s.currCutRepoNode = dynamic_pointer_cast<RepoTreeNode>(
             s.repoData.model->GetSharedPtr(leftIndex));
-        s.uiData->cutRepoNodeBtn->setText("Paste");
+        s.uiData->cutRepoNodeBtn->setText("粘贴");
     } else {
         auto leftIndex = s.uiData->repoTreeView->currentIndex();
         auto newParentNode = dynamic_pointer_cast<RepoTreeNode>(
@@ -347,8 +347,10 @@ void MainWindow::on_cutBtn_clicked() {
                 hddData.isDirty = true;
             }
         }
-        s.uiData->cutRepoNodeBtn->setText("Cut");
-        // todo: 左边展开
+        s.uiData->cutRepoNodeBtn->setText("剪切");
+        // 左边展开
+        auto currCutIndex = s.repoData.model->findIndexByTreeNode(s.currCutRepoNode);
+        s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, currCutIndex);
     }
 }
 
