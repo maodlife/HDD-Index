@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     s.uiData->CreataUIData(this);
+    connectUiData();
     if (JsonFileDirPath.size() == 0){
         JsonFileDirPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
                           + "/HDD-Index";
@@ -73,6 +74,25 @@ void MainWindow::closeEvent(QCloseEvent *event) {
         }
     }
     event->accept(); // 允许关闭
+}
+
+void MainWindow::connectUiData()
+{
+    connect(s.uiData->saveRepoBtn, &QPushButton::clicked, this, &MainWindow::on_pushButton_3_clicked);
+    connect(s.uiData->createRepoSubDirBtn, &QPushButton::clicked, this, &MainWindow::on_createDirBtn_clicked);
+    connect(s.uiData->renameRepoDirBtn, &QPushButton::clicked, this, &MainWindow::on_renameRepoBtn_clicked);
+    connect(s.uiData->jmpRepoSaveDataHddBtn, &QPushButton::clicked, this, &MainWindow::on_jumpToSaveHddNodeBtn_clicked);
+    connect(s.uiData->deleteRepoNodeBtn, &QPushButton::clicked, this, &MainWindow::on_deleteRepoNodeBtn_clicked);
+    connect(s.uiData->cutRepoNodeBtn, &QPushButton::clicked, this, &MainWindow::on_cutBtn_clicked);
+    // connect(s.uiData->refreshHddBtn, &QPushButton::clicked, this, &MainWindow::on_cutBtn_clicked);
+    connect(s.uiData->saveHddBtn, &QPushButton::clicked, this, &MainWindow::on_saveHddBtn_clicked);
+    connect(s.uiData->addHddBtn, &QPushButton::clicked, this, &MainWindow::on_addNewBtn_clicked);
+    // connect(s.uiData->deleteHddBtn, &QPushButton::clicked, this, &MainWindow::on_saveHddBtn_clicked);
+    connect(s.uiData->createRepoAndDeclareBtn, &QPushButton::clicked, this, &MainWindow::on_AddToRepoAndDeclareBtn_clicked);
+    connect(s.uiData->declareBtn, &QPushButton::clicked, this, &MainWindow::on_declareBtn_clicked);
+    connect(s.uiData->jmpToRepoNodeBtn, &QPushButton::clicked, this, &MainWindow::on_jumpToRepoNodeBtn_clicked);
+    connect(s.uiData->hddComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::on_hddComboBox_currentIndexChanged);
+    connect(s.uiData->repoTreeView, &QTreeView::clicked, this, &MainWindow::on_repoTreeView_clicked);
 }
 
 // 添加HDD

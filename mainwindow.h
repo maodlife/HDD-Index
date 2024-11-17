@@ -26,6 +26,8 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+    void connectUiData();
+
     // 添加HDD
     void on_addNewBtn_clicked();
 
