@@ -228,7 +228,7 @@ void MainWindow::on_declareBtn_clicked() {
 // 保存所有HDD
 void MainWindow::on_saveHddBtn_clicked()
 {
-    for (auto hddData : s.hddDataList){
+    for (auto &hddData : s.hddDataList){
         if (hddData.isDirty == false)
             continue;
         QString filePath = JsonFileDirPath + JsonFileDirName
