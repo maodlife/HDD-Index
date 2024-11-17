@@ -15,38 +15,39 @@ const QString MainWindow::RepoJsonFileName = "RepoTreeData.txt";
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    s.uiData->CreataUIData(this);
     if (JsonFileDirPath.size() == 0){
         JsonFileDirPath = QCoreApplication::applicationDirPath();
     }
     // load json file
-    QDir jsonFileDir(JsonFileDirPath + JsonFileDirName);
-    auto fileList = jsonFileDir.entryInfoList(QDir::Files);
-    for (const auto &file : std::as_const(fileList)) {
-        if (file.fileName() == RepoJsonFileName) {
-            // repository
-            QString path = JsonFileDirPath + JsonFileDirName +
-                           "/" + RepoJsonFileName;
-            s.repoData.TryLoadJson(path);
-        } else {
-            HddData hddData;
-            hddData.labelName = file.fileName();
-            hddData.labelName.chop(4);
-            s.hddDataList.push_back(hddData);
-        }
-    }
-    // init reposity if empty
-    if (s.repoData.hasLoaded == false) {
-        std::shared_ptr<RepoTreeNode> rootPtr = std::make_shared<RepoTreeNode>();
-        rootPtr->isDir = true;
-        rootPtr->name = "Repository";
-        s.repoData.rootPtr = rootPtr;
-        s.repoData.hasLoaded = true;
-    }
-    // set hdd combobox
-    setHddComboboxView();
-    // set repository tree view
-    s.repoData.model = make_shared<RepoTreeModel>(s.repoData.rootPtr);
-    ui->repoTreeView->setModel(s.repoData.model.get());
+    // QDir jsonFileDir(JsonFileDirPath + JsonFileDirName);
+    // auto fileList = jsonFileDir.entryInfoList(QDir::Files);
+    // for (const auto &file : std::as_const(fileList)) {
+    //     if (file.fileName() == RepoJsonFileName) {
+    //         // repository
+    //         QString path = JsonFileDirPath + JsonFileDirName +
+    //                        "/" + RepoJsonFileName;
+    //         s.repoData.TryLoadJson(path);
+    //     } else {
+    //         HddData hddData;
+    //         hddData.labelName = file.fileName();
+    //         hddData.labelName.chop(4);
+    //         s.hddDataList.push_back(hddData);
+    //     }
+    // }
+    // // init reposity if empty
+    // if (s.repoData.hasLoaded == false) {
+    //     std::shared_ptr<RepoTreeNode> rootPtr = std::make_shared<RepoTreeNode>();
+    //     rootPtr->isDir = true;
+    //     rootPtr->name = "Repository";
+    //     s.repoData.rootPtr = rootPtr;
+    //     s.repoData.hasLoaded = true;
+    // }
+    // // set hdd combobox
+    // setHddComboboxView();
+    // // set repository tree view
+    // s.repoData.model = make_shared<RepoTreeModel>(s.repoData.rootPtr);
+    // s.uiData->repoTreeView->setModel(s.repoData.model.get());
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -74,7 +75,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
 // 添加HDD
 void MainWindow::on_addNewBtn_clicked() {
-    auto hddLabel = ui->hddLabelInputTextEdit->toPlainText();
+    auto hddLabel = s.uiData->hddLabelNameLineEdit->text();
     // empty label
     if (hddLabel.size() == 0) {
         return;
@@ -108,34 +109,34 @@ void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
     hddData.TryLoadJson(path);
     if (hddData.model == nullptr)
         hddData.model = make_shared<HddTreeModel>(hddData.rootPtr);
-    ui->hddTreeView->setModel(hddData.model.get());
+    s.uiData->hddTreeView->setModel(hddData.model.get());
 }
 
 // 创建子目录
 void MainWindow::on_createDirBtn_clicked()
 {
-    if (ui->createDirNameLineEdit->text().isEmpty()){
+    if (s.uiData->createDirNameLineEdit->text().isEmpty()){
         return;
     }
-    auto currRepoTreeIdx = ui->repoTreeView->currentIndex();
-    s.repoData.model->MakeDir(currRepoTreeIdx, ui->createDirNameLineEdit->text());
+    auto currRepoTreeIdx = s.uiData->repoTreeView->currentIndex();
+    s.repoData.model->MakeDir(currRepoTreeIdx, s.uiData->createDirNameLineEdit->text());
 }
 
 void MainWindow::setHddComboboxView()
 {
-    ui->hddComboBox->clear();
+    s.uiData->hddComboBox->clear();
     for (const auto &hddData : std::as_const(s.hddDataList)) {
-        ui->hddComboBox->addItem(hddData.labelName);
+        s.uiData->hddComboBox->addItem(hddData.labelName);
     }
 }
 
 // 新建至Repo，并声明持有
 void MainWindow::on_AddToRepoAndDeclareBtn_clicked() {
-    auto leftIndex = ui->repoTreeView->currentIndex();
-    auto rightIndex = ui->hddTreeView->currentIndex();
-    QString hddLabel = ui->hddComboBox->currentText();
+    auto leftIndex = s.uiData->repoTreeView->currentIndex();
+    auto rightIndex = s.uiData->hddTreeView->currentIndex();
+    QString hddLabel = s.uiData->hddComboBox->currentText();
     auto rightTreeNodePtr =
-        s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(
+        s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->GetSharedPtr(
         rightIndex);
     std::shared_ptr<HddTreeNode> hddTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(rightTreeNodePtr);
     if (hddTreeNodePtr->saveData.path.isEmpty() == false)
@@ -146,28 +147,28 @@ void MainWindow::on_AddToRepoAndDeclareBtn_clicked() {
         s.repoData.isDirty = true;
     }
     // 修改右边
-    s.hddDataList[ui->hddComboBox->currentIndex()].model->Declare(
+    s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->Declare(
         rightIndex, newNode->getPath());
-    s.hddDataList[ui->hddComboBox->currentIndex()].isDirty = true;
+    s.hddDataList[s.uiData->hddComboBox->currentIndex()].isDirty = true;
     // 左边展开
     auto targetRepoIndex = s.repoData.model->findIndexByTreeNode(newNode);
     // 展开到目标节点
-    ui->repoTreeView->expand(targetRepoIndex.parent());
+    s.uiData->repoTreeView->expand(targetRepoIndex.parent());
     // 选中目标节点
-    ui->repoTreeView->setCurrentIndex(targetRepoIndex);
+    s.uiData->repoTreeView->setCurrentIndex(targetRepoIndex);
     // 确保目标节点可见
-    ui->repoTreeView->scrollTo(targetRepoIndex);
+    s.uiData->repoTreeView->scrollTo(targetRepoIndex);
 }
 
 // 声明持有
 void MainWindow::on_declareBtn_clicked() {
-    auto leftIndex = ui->repoTreeView->currentIndex();
-    auto rightIndex = ui->hddTreeView->currentIndex();
-    QString hddLabel = ui->hddComboBox->currentText();
+    auto leftIndex = s.uiData->repoTreeView->currentIndex();
+    auto rightIndex = s.uiData->hddTreeView->currentIndex();
+    QString hddLabel = s.uiData->hddComboBox->currentText();
     auto leftTreeNodePtr = dynamic_pointer_cast<RepoTreeNode>(
         s.repoData.model->GetSharedPtr(leftIndex));
     auto rightTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(
-        s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(
+        s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->GetSharedPtr(
             rightIndex));
     if (!rightTreeNodePtr->saveData.path.isEmpty()){
         QMessageBox::information(this, "提示", "不能声明持有");
@@ -182,17 +183,17 @@ void MainWindow::on_declareBtn_clicked() {
     // 修改左边
     s.repoData.model->AddDeclare(leftIndex, hddLabel, rightTreeNodePtr);
     // 修改右边
-    s.hddDataList[ui->hddComboBox->currentIndex()].model->Declare(
+    s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->Declare(
         rightIndex, leftTreeNodePtr->getPath());
-    s.hddDataList[ui->hddComboBox->currentIndex()].isDirty = true;
+    s.hddDataList[s.uiData->hddComboBox->currentIndex()].isDirty = true;
     // 左边展开
     auto targetRepoIndex = s.repoData.model->findIndexByTreeNode(leftTreeNodePtr);
     // 展开到目标节点
-    ui->repoTreeView->expand(targetRepoIndex.parent());
+    s.uiData->repoTreeView->expand(targetRepoIndex.parent());
     // 选中目标节点
-    ui->repoTreeView->setCurrentIndex(targetRepoIndex);
+    s.uiData->repoTreeView->setCurrentIndex(targetRepoIndex);
     // 确保目标节点可见
-    ui->repoTreeView->scrollTo(targetRepoIndex);
+    s.uiData->repoTreeView->scrollTo(targetRepoIndex);
 }
 
 // 保存所有HDD
@@ -213,10 +214,10 @@ void MainWindow::on_repoTreeView_clicked(const QModelIndex &index)
 {
     // 显示saveData信息
     auto ptr = s.repoData.model->GetSharedPtr(index);
-    ui->saveHddComboBox->clear();
+    s.uiData->repoSaveDataHddComboBox->clear();
     shared_ptr<RepoTreeNode> repoPtr = dynamic_pointer_cast<RepoTreeNode>(ptr);
     for (const auto &nodeSaveData : repoPtr->nodeSaveDatas){
-        ui->saveHddComboBox->addItem(nodeSaveData.hddLabel);
+        s.uiData->repoSaveDataHddComboBox->addItem(nodeSaveData.hddLabel);
     }
 }
 
@@ -224,42 +225,42 @@ void MainWindow::on_repoTreeView_clicked(const QModelIndex &index)
 void MainWindow::on_jumpToSaveHddNodeBtn_clicked()
 {
     // 跳转到HDD Tree View中对应节点
-    auto ptr = s.repoData.model->GetSharedPtr(ui->repoTreeView->currentIndex());
+    auto ptr = s.repoData.model->GetSharedPtr(s.uiData->repoTreeView->currentIndex());
     shared_ptr<RepoTreeNode> repoPtr = dynamic_pointer_cast<RepoTreeNode>(ptr);
-    auto selectHDDIndex = ui->saveHddComboBox->currentIndex();
+    auto selectHDDIndex = s.uiData->repoSaveDataHddComboBox->currentIndex();
     auto &saveData = repoPtr->nodeSaveDatas[selectHDDIndex];
-    if (ui->hddComboBox->currentText() != saveData.hddLabel){
+    if (s.uiData->hddComboBox->currentText() != saveData.hddLabel){
         // 不是当前选择的HDD,切换过去
         // todo
         return;
     }
-    auto targetPtr = TreeNode::getPtrFromPath(s.hddDataList[ui->hddComboBox->currentIndex()].rootPtr, saveData.treePath);
-    auto targetIndex = s.hddDataList[ui->hddComboBox->currentIndex()].model->findIndexByTreeNode(targetPtr);
+    auto targetPtr = TreeNode::getPtrFromPath(s.hddDataList[s.uiData->hddComboBox->currentIndex()].rootPtr, saveData.treePath);
+    auto targetIndex = s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->findIndexByTreeNode(targetPtr);
     // 展开到目标节点
-    ui->hddTreeView->expand(targetIndex.parent());
+    s.uiData->hddTreeView->expand(targetIndex.parent());
     // 选中目标节点
-    ui->hddTreeView->setCurrentIndex(targetIndex);
+    s.uiData->hddTreeView->setCurrentIndex(targetIndex);
     // 确保目标节点可见
-    ui->hddTreeView->scrollTo(targetIndex);
+    s.uiData->hddTreeView->scrollTo(targetIndex);
 }
 
 // 跳转到持有的Repo节点
 void MainWindow::on_jumpToRepoNodeBtn_clicked()
 {
-    auto hddTreeViewIndex = ui->hddTreeView->currentIndex();
+    auto hddTreeViewIndex = s.uiData->hddTreeView->currentIndex();
     if (hddTreeViewIndex.isValid() == false)
         return;
-    auto treeNodePtr = s.hddDataList[ui->hddComboBox->currentIndex()].model->GetSharedPtr(hddTreeViewIndex);
+    auto treeNodePtr = s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->GetSharedPtr(hddTreeViewIndex);
     auto hddTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(treeNodePtr);
     auto repoNodePath = hddTreeNodePtr->saveData.path;
     auto repoNode = TreeNode::getPtrFromPath(s.repoData.rootPtr, repoNodePath);
     auto targetRepoIndex = s.repoData.model->findIndexByTreeNode(repoNode);
     // 展开到目标节点
-    ui->repoTreeView->expand(targetRepoIndex.parent());
+    s.uiData->repoTreeView->expand(targetRepoIndex.parent());
     // 选中目标节点
-    ui->repoTreeView->setCurrentIndex(targetRepoIndex);
+    s.uiData->repoTreeView->setCurrentIndex(targetRepoIndex);
     // 确保目标节点可见
-    ui->repoTreeView->scrollTo(targetRepoIndex);
+    s.uiData->repoTreeView->scrollTo(targetRepoIndex);
 }
 
 // 保存Repository到Json文件
@@ -276,7 +277,7 @@ void MainWindow::on_pushButton_3_clicked()
 // 删除repo节点
 void MainWindow::on_deleteRepoNodeBtn_clicked()
 {
-    auto leftIndex = ui->repoTreeView->currentIndex();
+    auto leftIndex = s.uiData->repoTreeView->currentIndex();
     // auto repoTreeNode = s.repoData.model->GetSharedPtr(leftIndex);
     // todo: 查找saveData信息并移除，先不做了
     s.repoData.model->removeTreeNode(leftIndex);
@@ -286,12 +287,12 @@ void MainWindow::on_deleteRepoNodeBtn_clicked()
 // 剪切repo节点
 void MainWindow::on_cutBtn_clicked() {
     if (s.currCutRepoNode == nullptr) {
-        auto leftIndex = ui->repoTreeView->currentIndex();
+        auto leftIndex = s.uiData->repoTreeView->currentIndex();
         s.currCutRepoNode = dynamic_pointer_cast<RepoTreeNode>(
             s.repoData.model->GetSharedPtr(leftIndex));
-        ui->cutBtn->setText("Paste");
+        s.uiData->cutRepoNodeBtn->setText("Paste");
     } else {
-        auto leftIndex = ui->repoTreeView->currentIndex();
+        auto leftIndex = s.uiData->repoTreeView->currentIndex();
         auto newParentNode = dynamic_pointer_cast<RepoTreeNode>(
             s.repoData.model->GetSharedPtr(leftIndex));
         // 修改左边
@@ -324,7 +325,7 @@ void MainWindow::on_cutBtn_clicked() {
                 hddData.isDirty = true;
             }
         }
-        ui->cutBtn->setText("Cut");
+        s.uiData->cutRepoNodeBtn->setText("Cut");
         // todo: 左边展开
     }
 }

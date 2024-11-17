@@ -6,6 +6,12 @@
 #include "hddtreemodel.h"
 #include "repotreemodel.h"
 #include <vector>
+#include <QMainWindow>
+#include <QSplitter>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QTreeView>
+#include <QComboBox>
 
 struct HddData {
     std::shared_ptr<HddTreeNode> rootPtr;
@@ -26,11 +32,40 @@ struct RepoData {
     void TryLoadJson(QString path);
 };
 
+struct UIData{
+    // left ui
+    QPushButton *saveRepoBtn;
+    QTreeView *repoTreeView;
+    QLineEdit *createDirNameLineEdit;
+    QPushButton *createRepoSubDirBtn;
+    QPushButton *renameRepoDirBtn;
+    QComboBox *repoSaveDataHddComboBox;
+    QPushButton *jmpRepoSaveDataHddBtn;
+    QPushButton *deleteRepoNodeBtn;
+    QPushButton *cutRepoNodeBtn;
+    // right ui
+    QComboBox *hddComboBox;
+    QPushButton *refreshHddBtn;
+    QPushButton *saveHddBtn;
+    QLineEdit *hddLabelNameLineEdit;
+    QPushButton *addHddBtn;
+    QPushButton *deleteHddBtn;
+    QTreeView *hddTreeView;
+    QPushButton *createRepoAndDeclareBtn;
+    QPushButton *declareBtn;
+    QPushButton *jmpToRepoNodeBtn;
+
+    void CreataUIData(QWidget* parent);
+
+};
+
 class Solution {
 public:
-    Solution();
     std::vector<HddData> hddDataList;
     RepoData repoData;
+    UIData *uiData;
+
+    Solution();
 
     std::shared_ptr<RepoTreeNode> currCutRepoNode;
 
