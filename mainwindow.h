@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "solution.h"
+#include <QCloseEvent>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,12 +20,12 @@ public:
     ~MainWindow();
     static const QString JsonFileDirName;
     static const QString RepoJsonFileName;
-    QString JsonFileDirPath = "/Users/maodlife/Code/QtRepo/HDD-Index";
+    QString JsonFileDirPath = "";
 
 protected:
     void closeEvent(QCloseEvent *event) override;
 
-private slots:
+private:
     // 添加HDD
     void on_addNewBtn_clicked();
 
