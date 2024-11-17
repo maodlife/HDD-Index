@@ -91,6 +91,7 @@ void MainWindow::connectUiData()
     connect(s.uiData->createRepoAndDeclareBtn, &QPushButton::clicked, this, &MainWindow::on_AddToRepoAndDeclareBtn_clicked);
     connect(s.uiData->declareBtn, &QPushButton::clicked, this, &MainWindow::on_declareBtn_clicked);
     connect(s.uiData->jmpToRepoNodeBtn, &QPushButton::clicked, this, &MainWindow::on_jumpToRepoNodeBtn_clicked);
+    connect(s.uiData->copyHddTreeToRepoBtn, &QPushButton::clicked, this, &MainWindow::on_copyHddTreeToRepoBtn_clicked);
     connect(s.uiData->hddComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::on_hddComboBox_currentIndexChanged);
     connect(s.uiData->repoTreeView, &QTreeView::clicked, this, &MainWindow::on_repoTreeView_clicked);
 }
@@ -193,13 +194,14 @@ void MainWindow::on_declareBtn_clicked() {
         s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->GetSharedPtr(
             rightIndex));
     if (!rightTreeNodePtr->saveData.path.isEmpty()){
-        QMessageBox::information(this, "提示", "不能声明持有");
+        QMessageBox::information(this, "提示", "不能声明持有, 因为已声明持有了其他节点");
         return;
     }
+    QString errName;
     bool checkCanDeclare =
-        Solution::CheckCanDeclare(leftTreeNodePtr, rightTreeNodePtr);
+        Solution::CheckCanDeclare(leftTreeNodePtr, rightTreeNodePtr, errName);
     if (!checkCanDeclare) {
-        QMessageBox::information(this, "提示", "不能声明持有");
+        QMessageBox::information(this, "提示", "不能声明持有" + errName);
         return;
     }
     // 修改左边
@@ -360,3 +362,21 @@ void MainWindow::on_renameRepoBtn_clicked()
     // 实现上可以做成原地剪切成另一个名字
 }
 
+void MainWindow::on_copyHddTreeToRepoBtn_clicked()
+{
+    auto leftIndex = s.uiData->repoTreeView->currentIndex();
+    auto rightIndex = s.uiData->hddTreeView->currentIndex();
+    QString hddLabel = "";  // 用不着
+    auto rightTreeNodePtr =
+        s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->GetSharedPtr(
+            rightIndex);
+    std::shared_ptr<HddTreeNode> hddTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(rightTreeNodePtr);
+    // 修改左边
+    auto newNode = s.repoData.model->CreateAndDeclare(leftIndex, hddLabel, rightTreeNodePtr, false);
+    if (newNode != nullptr) {
+        s.repoData.isDirty = true;
+    }
+    // 展开左边
+    auto newLeftIndex = s.repoData.model->findIndexByTreeNode(newNode);
+    s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, newLeftIndex);
+}

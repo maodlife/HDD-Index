@@ -67,6 +67,12 @@ private:
     // 重命名repo节点
     void on_renameRepoBtn_clicked();
 
+    // 拷贝文件层级，但不声明持有
+    void on_copyHddTreeToRepoBtn_clicked();
+
+    // 跳转到能声明持有的repo节点
+    void on_guessCanDeclareBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
     Solution s;

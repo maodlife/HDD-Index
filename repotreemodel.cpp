@@ -19,7 +19,7 @@ QVariant RepoTreeModel::data(const QModelIndex &index, int role) const {
 }
 
 std::shared_ptr<TreeNode> RepoTreeModel::CreateAndDeclare(const QModelIndex &index, QString hddLabel,
-                                     std::shared_ptr<TreeNode> hddNode) {
+                                     std::shared_ptr<TreeNode> hddNode, bool declare) {
     // index节点的treenode节点指针
     std::shared_ptr<RepoTreeNode> treeNodePtr = nullptr;
     if (index.isValid() == false) {
@@ -35,7 +35,7 @@ std::shared_ptr<TreeNode> RepoTreeModel::CreateAndDeclare(const QModelIndex &ind
         return nullptr;
     // 检查是否存在同名子目录
     if (find_if(treeNodePtr->childs.begin(), treeNodePtr->childs.end(),
-                [hddLabel](auto value) { return value->name == hddLabel; }) !=
+                [=](auto value) { return value->name == hddNode->name; }) !=
         treeNodePtr->childs.end()) {
         return nullptr;
     }
@@ -43,10 +43,12 @@ std::shared_ptr<TreeNode> RepoTreeModel::CreateAndDeclare(const QModelIndex &ind
     this->beginResetModel();
     auto copied = RepoTreeNode::CopyHierarchy(treeNodePtr, hddNode);
     // declare
-    NodeSaveData saveData;
-    saveData.hddLabel = hddLabel;
-    saveData.treePath = hddNode->getPath();
-    copied->nodeSaveDatas.push_back(saveData);
+    if (declare) {
+        NodeSaveData saveData;
+        saveData.hddLabel = hddLabel;
+        saveData.treePath = hddNode->getPath();
+        copied->nodeSaveDatas.push_back(saveData);
+    }
     this->endResetModel();
     return copied;
 }

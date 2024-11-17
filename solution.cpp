@@ -10,18 +10,23 @@ Solution::Solution() {
 }
 
 bool Solution::CheckCanDeclare(std::shared_ptr<TreeNode> leftPtr,
-                               std::shared_ptr<TreeNode> rightPtr) {
-    if (leftPtr->name != rightPtr->name)
+                               std::shared_ptr<TreeNode> rightPtr,
+                               QString &errName) {
+    if (leftPtr->name != rightPtr->name){
+        errName = leftPtr->name;
         return false;
+    }
     for (const auto &child : leftPtr->childs) {
         auto childName = child->name;
         auto foundInRight =
             find_if(rightPtr->childs.begin(), rightPtr->childs.end(),
                                     [=](const auto &value) { return value->name == childName; });
-        if (foundInRight == rightPtr->childs.end())
+        if (foundInRight == rightPtr->childs.end()){
+            errName = childName;
             return false;
+        }
         auto rightChild = *foundInRight;
-        if (child->isDir && CheckCanDeclare(child, rightChild) == false)
+        if (child->isDir && CheckCanDeclare(child, rightChild, errName) == false)
             return false;
     }
     return true;
@@ -129,23 +134,32 @@ void UIData::CreataUIData(QMainWindow* parent)
     deleteHddBtn->setText("删除当前");
     splitterHddOp->addWidget(deleteHddBtn);
 
+    hddTreeView = new QTreeView(splitterRight);
+
     QSplitter *splitterHddNodeOp = new QSplitter(Qt::Horizontal, splitterRight);
-    createRepoAndDeclareBtn = new QPushButton(splitterRight);
+    createRepoAndDeclareBtn = new QPushButton(splitterHddNodeOp);
     createRepoAndDeclareBtn->setText("新建至Repo并声明持有");
     splitterHddNodeOp->addWidget(createRepoAndDeclareBtn);
-    declareBtn = new QPushButton(splitterRight);
+    declareBtn = new QPushButton(splitterHddNodeOp);
     declareBtn->setText("声明持有");
     splitterHddNodeOp->addWidget(declareBtn);
-    jmpToRepoNodeBtn = new QPushButton(splitterRight);
+    jmpToRepoNodeBtn = new QPushButton(splitterHddNodeOp);
     jmpToRepoNodeBtn->setText("跳转至Repo");
     splitterHddNodeOp->addWidget(jmpToRepoNodeBtn);
 
-    hddTreeView = new QTreeView(splitterRight);
+    QSplitter *splitterHddNodeOp2 = new QSplitter(Qt::Horizontal, splitterRight);
+    copyHddTreeToRepoBtn = new QPushButton(splitterHddNodeOp2);
+    copyHddTreeToRepoBtn->setText("拷贝文件层级，但不声明持有");
+    splitterHddNodeOp2->addWidget(copyHddTreeToRepoBtn);
+    guessCanDeclareBtn = new QPushButton(splitterHddNodeOp2);
+    guessCanDeclareBtn->setText("跳转到能声明持有的repo节点");
+    splitterHddNodeOp2->addWidget(guessCanDeclareBtn);
 
     splitterRight->addWidget(splitterHddView);
     splitterRight->addWidget(splitterHddOp);
     splitterRight->addWidget(hddTreeView);
     splitterRight->addWidget(splitterHddNodeOp);
+    splitterRight->addWidget(splitterHddNodeOp2);
 
     parent->setCentralWidget(splitter);
 }
