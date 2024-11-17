@@ -119,11 +119,23 @@ void UIData::CreataUIData(QMainWindow* parent)
     deleteHddBtn->setText("删除当前");
     splitterHddOp->addWidget(deleteHddBtn);
 
+    QSplitter *splitterHddNodeOp = new QSplitter(Qt::Horizontal, splitterRight);
+    createRepoAndDeclareBtn = new QPushButton(splitterRight);
+    createRepoAndDeclareBtn->setText("新建至Repo并声明持有");
+    splitterHddNodeOp->addWidget(createRepoAndDeclareBtn);
+    declareBtn = new QPushButton(splitterRight);
+    declareBtn->setText("声明持有");
+    splitterHddNodeOp->addWidget(declareBtn);
+    jmpToRepoNodeBtn = new QPushButton(splitterRight);
+    jmpToRepoNodeBtn->setText("跳转至Repo");
+    splitterHddNodeOp->addWidget(jmpToRepoNodeBtn);
+
     hddTreeView = new QTreeView(splitterRight);
 
     splitterRight->addWidget(splitterHddView);
     splitterRight->addWidget(splitterHddOp);
     splitterRight->addWidget(hddTreeView);
+    splitterRight->addWidget(splitterHddNodeOp);
 
     parent->setCentralWidget(splitter);
 }

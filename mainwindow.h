@@ -20,7 +20,7 @@ public:
     ~MainWindow();
     static const QString JsonFileDirName;
     static const QString RepoJsonFileName;
-    QString JsonFileDirPath = "C:/Users/maodl/Code/QtRepo/HDD-Index/HDD-Index";
+    QString JsonFileDirPath = "";
 
 protected:
     void closeEvent(QCloseEvent *event) override;

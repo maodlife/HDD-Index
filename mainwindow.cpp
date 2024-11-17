@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QStandardPaths>
 #include <algorithm>
 
 using namespace std;
@@ -17,37 +18,38 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     s.uiData->CreataUIData(this);
     if (JsonFileDirPath.size() == 0){
-        JsonFileDirPath = QCoreApplication::applicationDirPath();
+        JsonFileDirPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
+                          + "/HDD-Index";
     }
     // load json file
-    // QDir jsonFileDir(JsonFileDirPath + JsonFileDirName);
-    // auto fileList = jsonFileDir.entryInfoList(QDir::Files);
-    // for (const auto &file : std::as_const(fileList)) {
-    //     if (file.fileName() == RepoJsonFileName) {
-    //         // repository
-    //         QString path = JsonFileDirPath + JsonFileDirName +
-    //                        "/" + RepoJsonFileName;
-    //         s.repoData.TryLoadJson(path);
-    //     } else {
-    //         HddData hddData;
-    //         hddData.labelName = file.fileName();
-    //         hddData.labelName.chop(4);
-    //         s.hddDataList.push_back(hddData);
-    //     }
-    // }
-    // // init reposity if empty
-    // if (s.repoData.hasLoaded == false) {
-    //     std::shared_ptr<RepoTreeNode> rootPtr = std::make_shared<RepoTreeNode>();
-    //     rootPtr->isDir = true;
-    //     rootPtr->name = "Repository";
-    //     s.repoData.rootPtr = rootPtr;
-    //     s.repoData.hasLoaded = true;
-    // }
-    // // set hdd combobox
-    // setHddComboboxView();
-    // // set repository tree view
-    // s.repoData.model = make_shared<RepoTreeModel>(s.repoData.rootPtr);
-    // s.uiData->repoTreeView->setModel(s.repoData.model.get());
+    QDir jsonFileDir(JsonFileDirPath + JsonFileDirName);
+    auto fileList = jsonFileDir.entryInfoList(QDir::Files);
+    for (const auto &file : std::as_const(fileList)) {
+        if (file.fileName() == RepoJsonFileName) {
+            // repository
+            QString path = JsonFileDirPath + JsonFileDirName +
+                           "/" + RepoJsonFileName;
+            s.repoData.TryLoadJson(path);
+        } else {
+            HddData hddData;
+            hddData.labelName = file.fileName();
+            hddData.labelName.chop(4);
+            s.hddDataList.push_back(hddData);
+        }
+    }
+    // init reposity if empty
+    if (s.repoData.hasLoaded == false) {
+        std::shared_ptr<RepoTreeNode> rootPtr = std::make_shared<RepoTreeNode>();
+        rootPtr->isDir = true;
+        rootPtr->name = "Repository";
+        s.repoData.rootPtr = rootPtr;
+        s.repoData.hasLoaded = true;
+    }
+    // set hdd combobox
+    setHddComboboxView();
+    // set repository tree view
+    s.repoData.model = make_shared<RepoTreeModel>(s.repoData.rootPtr);
+    s.uiData->repoTreeView->setModel(s.repoData.model.get());
 }
 
 MainWindow::~MainWindow() { delete ui; }
