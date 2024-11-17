@@ -99,9 +99,30 @@ void UIData::CreataUIData(QMainWindow* parent)
     splitterLeft->addWidget(splitterRepoNodeOp);
 
     // right
+    QSplitter *splitterHddView = new QSplitter(Qt::Horizontal, splitterLeft);
+    hddComboBox = new QComboBox(splitterHddView);
+    splitterHddView->addWidget(hddComboBox);
+    refreshHddBtn = new QPushButton(splitterHddView);
+    refreshHddBtn->setText("刷新");
+    splitterHddView->addWidget(refreshHddBtn);
+    saveHddBtn = new QPushButton(splitterHddView);
+    saveHddBtn->setText("保存所有HDD");
+    splitterHddView->addWidget(saveHddBtn);
 
+    QSplitter *splitterHddOp = new QSplitter(Qt::Horizontal, splitterRight);
+    hddLabelNameLineEdit = new QLineEdit(splitterHddOp);
+    splitterHddOp->addWidget(hddLabelNameLineEdit);
+    addHddBtn = new QPushButton(splitterRight);
+    addHddBtn->setText("添加");
+    splitterHddOp->addWidget(addHddBtn);
+    deleteHddBtn = new QPushButton(splitterRight);
+    deleteHddBtn->setText("删除当前");
+    splitterHddOp->addWidget(deleteHddBtn);
 
     hddTreeView = new QTreeView(splitterRight);
+
+    splitterRight->addWidget(splitterHddView);
+    splitterRight->addWidget(splitterHddOp);
     splitterRight->addWidget(hddTreeView);
 
     parent->setCentralWidget(splitter);
