@@ -1,6 +1,7 @@
 #include "solution.h"
 #include <QCoreApplication>
 #include <algorithm>
+#include <QLabel>
 
 using namespace std;
 
@@ -62,17 +63,44 @@ void UIData::CreataUIData(QMainWindow* parent)
 
     // left
     saveRepoBtn = new QPushButton(splitterLeft);
+    saveRepoBtn->setText("保存Repo");
     repoTreeView = new QTreeView(splitterLeft);
-    // QSplitter *splitterCreateRepoSubDir = new QSplitter(Qt::Horizontal, splitterLeft);
-    // createDirNameLineEdit = new QLineEdit(splitterCreateRepoSubDir);
-    // createRepoSubDirBtn = new QPushButton(splitterCreateRepoSubDir);
-    // splitterCreateRepoSubDir->addWidget(createDirNameLineEdit);
-    // splitterCreateRepoSubDir->addWidget(createRepoSubDirBtn);
+
+    QSplitter *splitterCreateRepoSubDir = new QSplitter(Qt::Horizontal, splitterLeft);
+    createDirNameLineEdit = new QLineEdit(splitterCreateRepoSubDir);
+    createRepoSubDirBtn = new QPushButton(splitterCreateRepoSubDir);
+    createRepoSubDirBtn->setText("创建子目录");
+    renameRepoDirBtn = new QPushButton(splitterCreateRepoSubDir);
+    renameRepoDirBtn->setText("重命名");
+    splitterCreateRepoSubDir->addWidget(createDirNameLineEdit);
+    splitterCreateRepoSubDir->addWidget(createRepoSubDirBtn);
+    splitterCreateRepoSubDir->addWidget(renameRepoDirBtn);
+
+    QSplitter *splitterRepoSaveNode = new QSplitter(Qt::Horizontal, splitterLeft);
+    QLabel *repoSaveNodeLabel = new QLabel(splitterRepoSaveNode);
+    repoSaveNodeLabel->setText("保存了该节点的HDD");
+    splitterRepoSaveNode->addWidget(repoSaveNodeLabel);
+    repoSaveDataHddComboBox = new QComboBox(splitterRepoSaveNode);
+    splitterRepoSaveNode->addWidget(repoSaveDataHddComboBox);
+    jmpRepoSaveDataHddBtn = new QPushButton(splitterRepoSaveNode);
+    jmpRepoSaveDataHddBtn->setText("跳转");
+    splitterRepoSaveNode->addWidget(jmpRepoSaveDataHddBtn);
+
+    QSplitter *splitterRepoNodeOp = new QSplitter(Qt::Horizontal, splitterLeft);
+    deleteRepoNodeBtn = new QPushButton(splitterRepoNodeOp);
+    deleteRepoNodeBtn->setText("删除节点");
+    cutRepoNodeBtn = new QPushButton(splitterRepoNodeOp);
+    cutRepoNodeBtn->setText("剪切");
+
     splitterLeft->addWidget(saveRepoBtn);
     splitterLeft->addWidget(repoTreeView);
-    // splitterLeft->addWidget(splitterCreateRepoSubDir);
+    splitterLeft->addWidget(splitterCreateRepoSubDir);
+    splitterLeft->addWidget(splitterRepoSaveNode);
+    splitterLeft->addWidget(splitterRepoNodeOp);
 
     // right
+
+
     hddTreeView = new QTreeView(splitterRight);
     splitterRight->addWidget(hddTreeView);
 
