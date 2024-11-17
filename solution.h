@@ -55,7 +55,7 @@ struct UIData{
     QPushButton *declareBtn;
     QPushButton *jmpToRepoNodeBtn;
 
-    void CreataUIData(QWidget* parent);
+    void CreataUIData(QMainWindow* parent);
 
 };
 

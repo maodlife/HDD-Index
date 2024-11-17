@@ -52,7 +52,7 @@ void RepoData::TryLoadJson(QString path)
     }
 }
 
-void UIData::CreataUIData(QWidget* parent)
+void UIData::CreataUIData(QMainWindow* parent)
 {
     QSplitter *splitter = new QSplitter(Qt::Horizontal, parent);
     QSplitter *splitterLeft = new QSplitter(Qt::Vertical, splitter);
@@ -76,4 +76,5 @@ void UIData::CreataUIData(QWidget* parent)
     hddTreeView = new QTreeView(splitterRight);
     splitterRight->addWidget(hddTreeView);
 
+    parent->setCentralWidget(splitter);
 }
