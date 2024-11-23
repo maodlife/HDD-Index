@@ -55,6 +55,9 @@ private:
     // 声明持有
     void on_declareBtn_clicked();
 
+    // 放弃声明持有
+    void on_nodeclareBtn_clicked();
+
     // 保存Repository到Json文件
     void on_pushButton_3_clicked();
 

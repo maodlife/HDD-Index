@@ -95,6 +95,7 @@ void MainWindow::connectUiData()
     // connect(s.uiData->deleteHddBtn, &QPushButton::clicked, this, &MainWindow::on_saveHddBtn_clicked);
     connect(s.uiData->createRepoAndDeclareBtn, &QPushButton::clicked, this, &MainWindow::on_AddToRepoAndDeclareBtn_clicked);
     connect(s.uiData->declareBtn, &QPushButton::clicked, this, &MainWindow::on_declareBtn_clicked);
+    connect(s.uiData->nodeclareBtn, &QPushButton::clicked, this, &MainWindow::on_nodeclareBtn_clicked);
     connect(s.uiData->jmpToRepoNodeBtn, &QPushButton::clicked, this, &MainWindow::on_jumpToRepoNodeBtn_clicked);
     connect(s.uiData->copyHddTreeToRepoBtn, &QPushButton::clicked, this, &MainWindow::on_copyHddTreeToRepoBtn_clicked);
     connect(s.uiData->hddComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::on_hddComboBox_currentIndexChanged);
@@ -217,6 +218,27 @@ void MainWindow::on_declareBtn_clicked() {
     s.hddDataList[s.uiData->hddComboBox->currentIndex()].isDirty = true;
     // 左边展开
     auto targetRepoIndex = s.repoData.model->findIndexByTreeNode(leftTreeNodePtr);
+    // 展开到目标节点
+    s.uiData->repoTreeView->expand(targetRepoIndex.parent());
+    // 选中目标节点
+    s.uiData->repoTreeView->setCurrentIndex(targetRepoIndex);
+    // 确保目标节点可见
+    s.uiData->repoTreeView->scrollTo(targetRepoIndex);
+}
+
+void MainWindow::on_nodeclareBtn_clicked() {
+    auto rightIndex = s.uiData->hddTreeView->currentIndex();
+    QString hddLabel = s.uiData->hddComboBox->currentText();
+    auto rightTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(
+        s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->GetSharedPtr(
+            rightIndex));
+    if (rightTreeNodePtr->saveData.path.isEmpty()){
+        QMessageBox::information(this, "提示", "并没有声明持有repo");
+        return;
+    }
+    auto repoNodePath = rightTreeNodePtr->saveData.path;
+    auto repoNode = TreeNode::getPtrFromPath(s.repoData.rootPtr, repoNodePath);
+    auto targetRepoIndex = s.repoData.model->findIndexByTreeNode(repoNode);
     // 展开到目标节点
     s.uiData->repoTreeView->expand(targetRepoIndex.parent());
     // 选中目标节点

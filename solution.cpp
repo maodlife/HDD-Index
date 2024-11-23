@@ -143,6 +143,9 @@ void UIData::CreataUIData(QMainWindow* parent)
     declareBtn = new QPushButton(splitterHddNodeOp);
     declareBtn->setText("声明持有");
     splitterHddNodeOp->addWidget(declareBtn);
+    nodeclareBtn = new QPushButton(splitterHddNodeOp);
+    nodeclareBtn->setText("放弃声明持有");
+    splitterHddNodeOp->addWidget(nodeclareBtn);
     jmpToRepoNodeBtn = new QPushButton(splitterHddNodeOp);
     jmpToRepoNodeBtn->setText("跳转至Repo");
     splitterHddNodeOp->addWidget(jmpToRepoNodeBtn);

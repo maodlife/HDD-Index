@@ -53,6 +53,7 @@ struct UIData{
     QTreeView *hddTreeView;
     QPushButton *createRepoAndDeclareBtn;
     QPushButton *declareBtn;
+    QPushButton *nodeclareBtn;
     QPushButton *jmpToRepoNodeBtn;
     QPushButton *copyHddTreeToRepoBtn;
     QPushButton *guessCanDeclareBtn;

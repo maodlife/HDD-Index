@@ -70,6 +70,11 @@ void RepoTreeModel::AddDeclare(const QModelIndex &index, QString hddLabel,
     return;
 }
 
+void RepoTreeModel::RemoveDeclare(const QModelIndex &index, QString hddLabel)
+{
+
+}
+
 void RepoTreeModel::CutRepoNode(
     std::shared_ptr<RepoTreeNode> repoNode,
     std::shared_ptr<RepoTreeNode> targetParentNode) {

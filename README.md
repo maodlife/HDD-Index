@@ -6,7 +6,8 @@ HDD Index is a Qt/C++ program that can organize and browse disk indexes.
 
 ## Milestone
 
-- [ ] 复制文件层级，但不声明持有
+- [x] 复制文件层级，但不声明持有
+- [ ] 放弃声明持有
 - [ ] 重命名repo节点
 - [ ] 跳转到能声明持有的repo节点
 - [ ] 删除节点时删除saveData信息
