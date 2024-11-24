@@ -1,13 +1,17 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "hddtreenode.h"
+#include "repotreenode.h"
 #include "treenode.h"
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStandardPaths>
+#include <QtCore/qstringliteral.h>
 #include <QtWidgets/qpushbutton.h>
 #include <algorithm>
+#include <memory>
 
 using namespace std;
 
@@ -128,6 +132,10 @@ void MainWindow::connectUiData() {
             &MainWindow::on_hddComboBox_currentIndexChanged);
     connect(s.uiData->repoTreeView, &QTreeView::clicked, this,
             &MainWindow::on_repoTreeView_clicked);
+    connect(s.uiData->guessCanDeclareBtn, &QPushButton::clicked, this,
+            &MainWindow::on_guessCanDeclareBtn_clicked);
+    connect(s.uiData->findSameNameBtn, &QPushButton::clicked, this,
+            &MainWindow::on_findSameNameBtn_clicked);
 }
 
 // 添加HDD
@@ -458,4 +466,46 @@ void MainWindow::on_copyHddTreeToRepoBtn_clicked() {
     // 展开左边
     auto newLeftIndex = s.repoData.model->findIndexByTreeNode(newNode);
     s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, newLeftIndex);
+}
+
+void MainWindow::on_guessCanDeclareBtn_clicked() {
+    auto leftIndex = s.uiData->repoTreeView->currentIndex();
+    auto rightIndex = s.uiData->hddTreeView->currentIndex();
+    auto rightPtr = dynamic_pointer_cast<HddTreeNode>(
+        s.hddDataList[s.uiData->hddComboBox->currentIndex()]
+            .model->GetSharedPtr(rightIndex));
+    QString errName = "";
+    auto result = TreeNode::findIfInTree(
+        s.repoData.rootPtr, [rightPtr, this, &errName](auto ptr) {
+            if (ptr->name != rightPtr->name)
+                return false;
+            if (s.CheckCanDeclare(ptr, rightPtr, errName)) {
+                return true;
+            }
+            return false;
+        });
+    if (result.size() == 0)
+        return;
+    auto repoPtr = dynamic_pointer_cast<RepoTreeNode>(result[0]);
+    auto repoIndex = s.repoData.model->findIndexByTreeNode(repoPtr);
+    s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, repoIndex);
+}
+
+void MainWindow::on_findSameNameBtn_clicked() {
+    auto rightIndex = s.uiData->hddTreeView->currentIndex();
+    auto rightPtr = dynamic_pointer_cast<HddTreeNode>(
+        s.hddDataList[s.uiData->hddComboBox->currentIndex()]
+            .model->GetSharedPtr(rightIndex));
+    QString errName = "";
+    auto result = TreeNode::findIfInTree(s.repoData.rootPtr,
+                                         [rightPtr, this, &errName](auto ptr) {
+                                             if (ptr->name == rightPtr->name)
+                                                 return true;
+                                             return false;
+                                         });
+    if (result.size() == 0)
+        return;
+    auto repoPtr = dynamic_pointer_cast<RepoTreeNode>(result[0]);
+    auto repoIndex = s.repoData.model->findIndexByTreeNode(repoPtr);
+    s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, repoIndex);
 }

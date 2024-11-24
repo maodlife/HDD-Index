@@ -79,6 +79,9 @@ private:
     // 跳转到能声明持有的repo节点
     void on_guessCanDeclareBtn_clicked();
 
+    // 跳转到同名的repo节点
+    void on_findSameNameBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
     Solution s;

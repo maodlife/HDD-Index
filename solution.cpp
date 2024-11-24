@@ -163,6 +163,9 @@ void UIData::CreataUIData(QMainWindow* parent)
     guessCanDeclareBtn = new QPushButton(splitterHddNodeOp2);
     guessCanDeclareBtn->setText("跳转到能声明持有的repo节点");
     splitterHddNodeOp2->addWidget(guessCanDeclareBtn);
+    findSameNameBtn = new QPushButton(splitterHddNodeOp2);
+    findSameNameBtn->setText("跳转同名repo节点");
+    splitterHddNodeOp2->addWidget(findSameNameBtn);
 
     splitterRight->addWidget(splitterHddView);
     splitterRight->addWidget(splitterHddOp);

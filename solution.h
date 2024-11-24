@@ -58,6 +58,7 @@ struct UIData{
     QPushButton *jmpToRepoNodeBtn;
     QPushButton *copyHddTreeToRepoBtn;
     QPushButton *guessCanDeclareBtn;
+    QPushButton *findSameNameBtn;
 
     void CreataUIData(QMainWindow* parent);
 
