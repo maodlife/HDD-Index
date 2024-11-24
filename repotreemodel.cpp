@@ -70,9 +70,18 @@ void RepoTreeModel::AddDeclare(const QModelIndex &index, QString hddLabel,
     return;
 }
 
-void RepoTreeModel::RemoveDeclare(const QModelIndex &index, QString hddLabel)
+bool RepoTreeModel::RemoveDeclare(const QModelIndex &index, QString hddLabel)
 {
-
+    auto ptr = std::dynamic_pointer_cast<RepoTreeNode>(this->GetSharedPtr(index));
+    auto foundIt = find_if(ptr->nodeSaveDatas.begin(),
+                           ptr->nodeSaveDatas.end(),
+                           [=](const auto &value) { return value.hddLabel == hddLabel; });
+    if (foundIt == ptr->nodeSaveDatas.end())
+        return false;
+    this->beginResetModel();
+    ptr->nodeSaveDatas.erase(foundIt);
+    this->endResetModel();
+    return true;
 }
 
 void RepoTreeModel::CutRepoNode(

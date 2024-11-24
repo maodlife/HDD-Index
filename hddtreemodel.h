@@ -16,6 +16,9 @@ public:
 
     // 声明Index持有Repo中的节点, 不做文件夹递归比较
     void Declare(const QModelIndex &index, QString path);
+
+    // 放弃声明持有
+    bool NoDeclare(const QModelIndex &index);
 };
 
 #endif // HDDTREEMODEL_H

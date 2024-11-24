@@ -33,3 +33,15 @@ void HddTreeModel::Declare(const QModelIndex &index, QString path)
     this->dataChanged(index, index, {Qt::DisplayRole});
     hddTreeNodePtr->saveData.path = path;
 }
+
+bool HddTreeModel::NoDeclare(const QModelIndex &index) {
+    auto ptr = GetSharedPtr(index);
+    auto hddTreeNodePtr = std::dynamic_pointer_cast<HddTreeNode>(ptr);
+    if (hddTreeNodePtr->saveData.path.isEmpty())
+        return false;
+    this->beginResetModel();
+    hddTreeNodePtr->saveData.path = "";
+    hddTreeNodePtr->saveData.lazyNodePtr.reset();
+    this->endResetModel();
+    return true;
+}

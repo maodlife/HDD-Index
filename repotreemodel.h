@@ -24,7 +24,7 @@ public:
     void AddDeclare(const QModelIndex &index, QString hddLabel, std::shared_ptr<TreeNode> hddNode);
 
     // 删除声明持有
-    void RemoveDeclare(const QModelIndex &index, QString hddLabel);
+    bool RemoveDeclare(const QModelIndex &index, QString hddLabel);
 
     void CutRepoNode(std::shared_ptr<RepoTreeNode> repoNode, std::shared_ptr<RepoTreeNode> targetParentNode);
 };

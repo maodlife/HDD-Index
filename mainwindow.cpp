@@ -229,8 +229,9 @@ void MainWindow::on_declareBtn_clicked() {
 void MainWindow::on_nodeclareBtn_clicked() {
     auto rightIndex = s.uiData->hddTreeView->currentIndex();
     QString hddLabel = s.uiData->hddComboBox->currentText();
+    auto &rightModel = s.hddDataList[s.uiData->hddComboBox->currentIndex()].model;
     auto rightTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(
-        s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->GetSharedPtr(
+        rightModel->GetSharedPtr(
             rightIndex));
     if (rightTreeNodePtr->saveData.path.isEmpty()){
         QMessageBox::information(this, "提示", "并没有声明持有repo");
@@ -239,12 +240,18 @@ void MainWindow::on_nodeclareBtn_clicked() {
     auto repoNodePath = rightTreeNodePtr->saveData.path;
     auto repoNode = TreeNode::getPtrFromPath(s.repoData.rootPtr, repoNodePath);
     auto targetRepoIndex = s.repoData.model->findIndexByTreeNode(repoNode);
-    // 展开到目标节点
-    s.uiData->repoTreeView->expand(targetRepoIndex.parent());
-    // 选中目标节点
-    s.uiData->repoTreeView->setCurrentIndex(targetRepoIndex);
-    // 确保目标节点可见
-    s.uiData->repoTreeView->scrollTo(targetRepoIndex);
+    // 修改左边
+    if (s.repoData.model->RemoveDeclare(targetRepoIndex, hddLabel)) {
+      s.repoData.isDirty = true;
+    }
+    // 修改右边
+    if (rightModel->NoDeclare(rightIndex)) {
+      s.hddDataList[s.uiData->hddComboBox->currentIndex()].isDirty = true;
+    }
+    // 展开左边
+    s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, targetRepoIndex);
+    // 展开右边
+    s.ExpandAndSetTreeViewNode(s.uiData->hddTreeView, rightIndex);
 }
 
 // 保存所有HDD
