@@ -38,6 +38,12 @@ MainWindow::MainWindow(QWidget *parent)
             s.hddDataList.push_back(hddData);
         }
     }
+    // 对所有hdd data load json, 不然之后还要考虑没有load的情况心智负担太大了
+    for (auto &hddData : s.hddDataList) {
+      QString path =
+          JsonFileDirPath + JsonFileDirName + "/" + hddData.labelName + ".txt";
+      hddData.TryLoadJson(path);
+    }
     // init reposity if empty
     if (s.repoData.hasLoaded == false) {
         std::shared_ptr<RepoTreeNode> rootPtr = std::make_shared<RepoTreeNode>();
