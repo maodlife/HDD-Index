@@ -45,3 +45,11 @@ bool HddTreeModel::NoDeclare(const QModelIndex &index) {
     this->endResetModel();
     return true;
 }
+
+void HddTreeModel::ChangeDeclareRepoPath(std::shared_ptr<HddTreeNode> ptr,
+                                         QString newRepoPath) {
+    this->beginResetModel();
+    ptr->saveData.path = newRepoPath;
+    ptr->saveData.lazyNodePtr.reset();
+    this->endResetModel();
+}

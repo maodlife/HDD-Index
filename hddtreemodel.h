@@ -1,8 +1,9 @@
 #ifndef HDDTREEMODEL_H
 #define HDDTREEMODEL_H
 
-#include "treemodel.h"
 #include "hddtreenode.h"
+#include "treemodel.h"
+#include <memory>
 
 class HddTreeModel : public TreeModel {
 private:
@@ -19,6 +20,10 @@ public:
 
     // 放弃声明持有
     bool NoDeclare(const QModelIndex &index);
+
+    // 修改声明持有的路径
+    void ChangeDeclareRepoPath(std::shared_ptr<HddTreeNode> ptr,
+                               QString newRepoPath);
 };
 
 #endif // HDDTREEMODEL_H

@@ -376,8 +376,29 @@ void MainWindow::on_pushButton_3_clicked() {
 // 删除repo节点
 void MainWindow::on_deleteRepoNodeBtn_clicked() {
     auto leftIndex = s.uiData->repoTreeView->currentIndex();
-    // auto repoTreeNode = s.repoData.model->GetSharedPtr(leftIndex);
-    // todo: 查找saveData信息并移除，先不做了
+    auto repoTreeNode = s.repoData.model->GetSharedPtr(leftIndex);
+    // 寻找受影响的saveDatas repo node
+    auto changedSaveDataRepoNodes =
+        TreeNode::findIfInTree(repoTreeNode, [](const auto &value) {
+            auto repoValue = dynamic_pointer_cast<RepoTreeNode>(value);
+            return repoValue->nodeSaveDatas.size() != 0;
+        });
+    // 在右边移除对应的声明持有
+    for (const auto &repoNode : changedSaveDataRepoNodes) {
+        auto repoTreeNode = dynamic_pointer_cast<RepoTreeNode>(repoNode);
+        for (const auto &saveData : repoTreeNode->nodeSaveDatas) {
+            auto hddLabel = saveData.hddLabel;
+            auto &hddData = *find_if(
+                s.hddDataList.begin(), s.hddDataList.end(),
+                [=](const auto &value) { return value.labelName == hddLabel; });
+            auto targetPtr =
+                TreeNode::getPtrFromPath(hddData.rootPtr, saveData.treePath);
+            // bug fix todo: 要区分tree view是否active
+            auto rightIndex = hddData.model->findIndexByTreeNode(targetPtr);
+            hddData.model->NoDeclare(rightIndex);
+            hddData.isDirty = true;
+        }
+    }
     s.repoData.model->removeTreeNode(leftIndex);
     s.repoData.isDirty = true;
 }
@@ -422,15 +443,13 @@ void MainWindow::on_pasteRepoBtn_clicked() {
             auto &hddData = *find_if(
                 s.hddDataList.begin(), s.hddDataList.end(),
                 [=](const auto &value) { return value.labelName == hddLabel; });
-            if (!hddData.hasLoaded) {
-                QString path = JsonFileDirPath + JsonFileDirName + "/" +
-                               hddData.labelName + ".txt";
-                hddData.TryLoadJson(path);
-            }
             auto targetPtr =
                 TreeNode::getPtrFromPath(hddData.rootPtr, saveData.treePath);
             auto hddTargetPtr = dynamic_pointer_cast<HddTreeNode>(targetPtr);
             hddTargetPtr->saveData.path = leftNewPathStr;
+            // 不能直接用model改，因为可能没有model（没有选中）
+            // hddData.model->ChangeDeclareRepoPath(hddTargetPtr,
+            // leftNewPathStr);
             hddData.isDirty = true;
         }
     }
