@@ -106,6 +106,12 @@ void UIData::CreataUIData(QMainWindow* parent)
     deleteRepoNodeBtn->setText("删除节点");
     cutRepoNodeBtn = new QPushButton(splitterRepoNodeOp);
     cutRepoNodeBtn->setText("剪切");
+    pasteRepoNodeBtn = new QPushButton(splitterRepoNodeOp);
+    pasteRepoNodeBtn->setText("粘贴");
+    pasteRepoNodeBtn->setEnabled(false);
+    splitterRepoNodeOp->addWidget(deleteRepoNodeBtn);
+    splitterRepoNodeOp->addWidget(cutRepoNodeBtn);
+    splitterRepoNodeOp->addWidget(pasteRepoNodeBtn);
 
     splitterLeft->addWidget(saveRepoBtn);
     splitterLeft->addWidget(repoTreeView);

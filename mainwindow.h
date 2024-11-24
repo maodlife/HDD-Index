@@ -67,6 +67,9 @@ private:
     // 剪切repo节点
     void on_cutBtn_clicked();
 
+    // 粘贴repo节点
+    void on_pasteRepoBtn_clicked();
+
     // 重命名repo节点
     void on_renameRepoBtn_clicked();
 

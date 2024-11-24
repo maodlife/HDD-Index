@@ -43,6 +43,7 @@ struct UIData{
     QPushButton *jmpRepoSaveDataHddBtn;
     QPushButton *deleteRepoNodeBtn;
     QPushButton *cutRepoNodeBtn;
+    QPushButton *pasteRepoNodeBtn;
     // right ui
     QComboBox *hddComboBox;
     QPushButton *refreshHddBtn;
