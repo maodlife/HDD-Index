@@ -53,13 +53,13 @@ std::shared_ptr<TreeNode> RepoTreeModel::CreateAndDeclare(const QModelIndex &ind
     return copied;
 }
 
-void RepoTreeModel::AddDeclare(const QModelIndex &index, QString hddLabel,
+bool RepoTreeModel::AddDeclare(const QModelIndex &index, QString hddLabel,
                                std::shared_ptr<TreeNode> hddNode) {
     auto ptr = std::dynamic_pointer_cast<RepoTreeNode>(this->GetSharedPtr(index));
     if (find_if(ptr->nodeSaveDatas.begin(), ptr->nodeSaveDatas.end(),
                 [=](const auto &value) { return value.hddLabel == hddLabel; }) !=
         ptr->nodeSaveDatas.end()) {
-        return;
+        return false;
     }
     this->beginResetModel();
     NodeSaveData saveData;
@@ -67,7 +67,7 @@ void RepoTreeModel::AddDeclare(const QModelIndex &index, QString hddLabel,
     saveData.treePath = hddNode->getPath();
     ptr->nodeSaveDatas.push_back(saveData);
     this->endResetModel();
-    return;
+    return true;
 }
 
 bool RepoTreeModel::RemoveDeclare(const QModelIndex &index, QString hddLabel)

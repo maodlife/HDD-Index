@@ -21,7 +21,7 @@ public:
                      std::shared_ptr<TreeNode> hddNode, bool declare = true);
 
     // 新增声明持有
-    void AddDeclare(const QModelIndex &index, QString hddLabel, std::shared_ptr<TreeNode> hddNode);
+    bool AddDeclare(const QModelIndex &index, QString hddLabel, std::shared_ptr<TreeNode> hddNode);
 
     // 删除声明持有
     bool RemoveDeclare(const QModelIndex &index, QString hddLabel);

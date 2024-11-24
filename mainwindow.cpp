@@ -211,7 +211,9 @@ void MainWindow::on_declareBtn_clicked() {
         return;
     }
     // 修改左边
-    s.repoData.model->AddDeclare(leftIndex, hddLabel, rightTreeNodePtr);
+    if (s.repoData.model->AddDeclare(leftIndex, hddLabel, rightTreeNodePtr)){
+        s.repoData.isDirty = true;
+    }
     // 修改右边
     s.hddDataList[s.uiData->hddComboBox->currentIndex()].model->Declare(
         rightIndex, leftTreeNodePtr->getPath());
