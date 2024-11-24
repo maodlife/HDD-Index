@@ -385,10 +385,12 @@ void MainWindow::on_cutBtn_clicked() {
                 hddData.isDirty = true;
             }
         }
-        s.uiData->cutRepoNodeBtn->setText("剪切");
         // 左边展开
         auto currCutIndex = s.repoData.model->findIndexByTreeNode(s.currCutRepoNode);
         s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, currCutIndex);
+        // 还原数据
+        s.uiData->cutRepoNodeBtn->setText("剪切");
+        s.currCutRepoNode = nullptr;
     }
 }
 
