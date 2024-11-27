@@ -48,5 +48,6 @@ std::shared_ptr<HddTreeNode> HddTreeNode::CreateTreeNodeByDirPath(QString path)
 
 void HddTreeNode::fromJsonObjectExtend(const QJsonObject &json)
 {
+    this->dirPath = json["dirPath"].toString();
     this->saveData.path = json["saveData"]["path"].toString();
 }

@@ -79,7 +79,6 @@ template <typename NodeType>
 std::shared_ptr<NodeType> TreeNode::fromJsonObject(const QJsonObject &json) {
     auto node = std::make_shared<NodeType>();
     node->name = json["name"].toString();
-    node->dirPath = json["dirPath"].toString();
     node->isDir = json["isDir"].toBool();
     node->fromJsonObjectExtend(json); // 额外数据恢复
 
