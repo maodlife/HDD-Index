@@ -13,12 +13,12 @@
 
 class TreeNode {
 public:
-    TreeNode();
     std::weak_ptr<TreeNode> parent;                // 父目录
     std::vector<std::shared_ptr<TreeNode>> childs; // 子目录/文件
     QString name;                                  // 自己的名字
-    QString dirPath;                               // 绝对路径  todo: delete
     bool isDir;                                    // 是否是目录
+
+    TreeNode();
 
     // 保存树结构到 JSON 文件
     static void saveTreeToFile(const std::shared_ptr<TreeNode> &root,

@@ -27,7 +27,6 @@ void TreeNode::saveTreeToFile(const std::shared_ptr<TreeNode> &root,
 QJsonObject TreeNode::toJsonObject() const {
     QJsonObject json;
     json["name"] = name;
-    json["dirPath"] = dirPath;
     json["isDir"] = isDir;
 
     QJsonArray childArray;

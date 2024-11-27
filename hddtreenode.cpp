@@ -9,6 +9,7 @@ HddTreeNode::HddTreeNode() : TreeNode() {}
 QJsonObject HddTreeNode::toJsonObject() const
 {
     auto json = TreeNode::toJsonObject();
+    json["dirPath"] = dirPath;
     QJsonObject saveDataJson;
     saveDataJson["path"] = this->saveData.path;
     json["saveData"] = saveDataJson;
