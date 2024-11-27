@@ -32,6 +32,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         treemodel.h treemodel.cpp
         repotreemodel.h repotreemodel.cpp
         hddtreemodel.h hddtreemodel.cpp
+        repotreenodemanager.h repotreenodemanager.cpp
         solution.h solution.cpp
     )
 # Define target properties for Android with Qt 6 as:
