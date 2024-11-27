@@ -9,6 +9,21 @@ using namespace std;
 
 TreeNode::TreeNode() {}
 
+void TreeNode::saveTreeToFile(const std::shared_ptr<TreeNode> &root,
+                              const QString &filePath) {
+    QJsonDocument doc(root->toJsonObject());
+    QFile file(filePath);
+    QDir dir;
+    if (!dir.mkpath(QFileInfo(filePath).path())) { // 创建所有必要的中间路径
+        qWarning("Failed to create directory path");
+        return;
+    }
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(doc.toJson());
+        file.close();
+    }
+}
+
 QJsonObject TreeNode::toJsonObject() const {
     QJsonObject json;
     json["name"] = name;
@@ -80,7 +95,7 @@ TreeNode::getPtrFromPath(std::shared_ptr<TreeNode> rootPtr, QString path) {
 
 std::vector<std::shared_ptr<TreeNode>> TreeNode::findIfInTree(
     std::shared_ptr<TreeNode> rootPtr,
-    std::function<bool(std::shared_ptr<TreeNode>)> predicate) {
+    std::function<bool(const std::shared_ptr<TreeNode> &)> predicate) {
     std::vector<std::shared_ptr<TreeNode>> ret;
     if (predicate(rootPtr)) {
         ret.push_back(rootPtr);

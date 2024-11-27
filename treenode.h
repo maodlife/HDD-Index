@@ -21,9 +21,7 @@ public:
     bool isDir;                                    // 是否是目录
 
     // 保存树结构到 JSON 文件
-    template <typename NodeType>
-        requires std::derived_from<NodeType, TreeNode>
-    static void saveTreeToFile(const std::shared_ptr<NodeType> &root,
+    static void saveTreeToFile(const std::shared_ptr<TreeNode> &root,
                                const QString &filePath);
 
     // 从 JSON 文件加载树结构
@@ -51,32 +49,15 @@ public:
     // 从root开始到自己的Path
     QString getPath();
 
-    // 传入Path返回节点指针，Path的开头是this的name
+    // 传入Path返回节点指针，Path的开头是rootPtr的name
     static std::shared_ptr<TreeNode>
     getPtrFromPath(std::shared_ptr<TreeNode> rootPtr, QString path);
 
     // 从指定节点递归查找，返回所有满足条件的指针
-    static std::vector<std::shared_ptr<TreeNode>>
-    findIfInTree(std::shared_ptr<TreeNode> rootPtr,
-                 std::function<bool(std::shared_ptr<TreeNode>)> predicate);
+    static std::vector<std::shared_ptr<TreeNode>> findIfInTree(
+        std::shared_ptr<TreeNode> rootPtr,
+        std::function<bool(const std::shared_ptr<TreeNode> &)> predicate);
 };
-
-template <typename NodeType>
-    requires std::derived_from<NodeType, TreeNode>
-void TreeNode::saveTreeToFile(const std::shared_ptr<NodeType> &root,
-                              const QString &filePath) {
-    QJsonDocument doc(root->toJsonObject());
-    QFile file(filePath);
-    QDir dir;
-    if (!dir.mkpath(QFileInfo(filePath).path())) { // 创建所有必要的中间路径
-        qWarning("Failed to create directory path");
-        return;
-    }
-    if (file.open(QIODevice::WriteOnly)) {
-        file.write(doc.toJson());
-        file.close();
-    }
-}
 
 template <typename NodeType>
     requires std::derived_from<NodeType, TreeNode>
