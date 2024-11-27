@@ -1,11 +1,10 @@
 #ifndef REPOTREEMODEL_H
 #define REPOTREEMODEL_H
 
-#include "treemodel.h"
 #include "repotreenode.h"
+#include "treemodel.h"
 
-class RepoTreeModel : public TreeModel
-{
+class RepoTreeModel : public TreeModel {
 private:
     std::shared_ptr<RepoTreeNode> _repoRootPtr;
 
@@ -21,12 +20,15 @@ public:
                      std::shared_ptr<TreeNode> hddNode, bool declare = true);
 
     // 新增声明持有
-    bool AddDeclare(const QModelIndex &index, QString hddLabel, std::shared_ptr<TreeNode> hddNode);
+    bool AddDeclare(const QModelIndex &index, QString hddLabel,
+                    std::shared_ptr<TreeNode> hddNode);
 
     // 删除声明持有
     bool RemoveDeclare(const QModelIndex &index, QString hddLabel);
 
-    void CutRepoNode(std::shared_ptr<RepoTreeNode> repoNode, std::shared_ptr<RepoTreeNode> targetParentNode);
+    // 剪切粘贴
+    void CutRepoNode(std::shared_ptr<RepoTreeNode> repoNode,
+                     std::shared_ptr<RepoTreeNode> targetParentNode);
 };
 
 #endif // REPOTREEMODEL_H
