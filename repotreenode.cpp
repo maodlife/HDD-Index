@@ -8,9 +8,6 @@ RepoTreeNode::RepoTreeNode() : TreeNode() {}
 QJsonObject RepoTreeNode::toJsonObject() const
 {
     QJsonObject json = TreeNode::toJsonObject();
-    json["name"] = name;
-    json["dirPath"] = dirPath;
-    json["isDir"] = isDir;
 
     QJsonArray saveDataArray;
     for (const auto &saveData : nodeSaveDatas) {

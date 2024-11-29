@@ -27,12 +27,14 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         treenode.h treenode.cpp
-        treemodel.h treemodel.cpp
-        solution.h solution.cpp
         repotreenode.h repotreenode.cpp
         hddtreenode.h hddtreenode.cpp
+        treemodel.h treemodel.cpp
         repotreemodel.h repotreemodel.cpp
         hddtreemodel.h hddtreemodel.cpp
+        repodata.h repodata.cpp
+        hdddata.h hdddata.cpp
+        solution.h solution.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET HDD-Index APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

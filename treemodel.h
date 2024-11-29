@@ -32,17 +32,18 @@ public:
     // 返回给定索引处的数据
     QVariant data(const QModelIndex &index, int role) const override;
 
-    // 在index下创建子目录
-    void MakeDir(const QModelIndex &index, QString name);
-
     // 返回给定索引的智能指针
     std::shared_ptr<TreeNode> GetSharedPtr(const QModelIndex &index);
 
     // 查找treenode指针在model中的index
     QModelIndex findIndexByTreeNode(std::shared_ptr<TreeNode> ptr);
 
+    // 在index下创建子目录
+    void MakeDir(const QModelIndex &index, QString name);
+
     // 删除节点及子树
     void removeTreeNode(const QModelIndex &index);
+
 private:
     QModelIndex findIndexByTreeNode(std::stack<QString> stack);
 };
