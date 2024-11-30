@@ -119,6 +119,12 @@ void UIData::CreataUIData(QMainWindow *parent) {
     saveRepoBtn->setText("保存Repo");
     repoTreeView = new QTreeView(splitterLeft);
 
+    QSplitter *splitterSearchRepo =
+        new QSplitter(Qt::Horizontal, splitterLeft);
+    searchRepoNodeLineEdit = new QLineEdit(splitterSearchRepo);
+    searchRepoNodeLineEdit->setPlaceholderText("搜索repo节点");
+    splitterSearchRepo->addWidget(searchRepoNodeLineEdit);
+
     QSplitter *splitterCreateRepoSubDir =
         new QSplitter(Qt::Horizontal, splitterLeft);
     createDirNameLineEdit = new QLineEdit(splitterCreateRepoSubDir);
@@ -154,6 +160,7 @@ void UIData::CreataUIData(QMainWindow *parent) {
     splitterRepoNodeOp->addWidget(pasteRepoNodeBtn);
 
     splitterLeft->addWidget(saveRepoBtn);
+    splitterLeft->addWidget(splitterSearchRepo);
     splitterLeft->addWidget(repoTreeView);
     splitterLeft->addWidget(splitterCreateRepoSubDir);
     splitterLeft->addWidget(splitterRepoSaveNode);

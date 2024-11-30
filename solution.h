@@ -14,6 +14,7 @@
 struct UIData {
     // left ui
     QPushButton *saveRepoBtn;
+    QLineEdit *searchRepoNodeLineEdit;
     QTreeView *repoTreeView;
     QLineEdit *createDirNameLineEdit;
     QPushButton *createRepoSubDirBtn;

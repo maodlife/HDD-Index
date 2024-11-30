@@ -58,6 +58,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 void MainWindow::connectUiData() {
     connect(s.uiData->saveRepoBtn, &QPushButton::clicked, this,
             &MainWindow::on_pushButton_3_clicked);
+    connect(s.uiData->searchRepoNodeLineEdit, &QLineEdit::textChanged, this,
+            &MainWindow::on_searchRepoNodeLineEdit_textChanged);
     connect(s.uiData->createRepoSubDirBtn, &QPushButton::clicked, this,
             &MainWindow::on_createDirBtn_clicked);
     connect(s.uiData->renameRepoDirBtn, &QPushButton::clicked, this,
@@ -316,6 +318,11 @@ void MainWindow::on_pushButton_3_clicked() {
     if (s.repoData.isDirty == false)
         return;
     s.SaveRepoData();
+}
+
+void MainWindow::on_searchRepoNodeLineEdit_textChanged()
+{
+
 }
 
 // 删除repo节点
