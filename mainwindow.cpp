@@ -15,54 +15,14 @@
 
 using namespace std;
 
-const QString MainWindow::JsonFileDirName = "/JsonFiles";
-const QString MainWindow::RepoJsonFileName = "RepoTreeData.txt";
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     s.uiData->CreataUIData(this);
     connectUiData();
-    if (JsonFileDirPath.size() == 0) {
-        JsonFileDirPath = QStandardPaths::writableLocation(
-                              QStandardPaths::DocumentsLocation) +
-                          "/HDD-Index";
-    }
-    // load json file
-    QDir jsonFileDir(JsonFileDirPath + JsonFileDirName);
-    auto fileList = jsonFileDir.entryInfoList(QDir::Files);
-    for (const auto &file : std::as_const(fileList)) {
-        if (file.fileName() == RepoJsonFileName) {
-            // repository
-            QString path =
-                JsonFileDirPath + JsonFileDirName + "/" + RepoJsonFileName;
-            s.repoData.TryLoadJson(path);
-        } else {
-            HddData hddData;
-            hddData.labelName = file.fileName();
-            hddData.labelName.chop(4);
-            s.hddDataList.push_back(hddData);
-        }
-    }
-    // 对所有hdd data load json, 不然之后还要考虑没有load的情况心智负担太大了
-    for (auto &hddData : s.hddDataList) {
-        QString path = JsonFileDirPath + JsonFileDirName + "/" +
-                       hddData.labelName + ".txt";
-        hddData.TryLoadJson(path);
-    }
-    // init reposity if empty
-    if (s.repoData.hasLoaded == false) {
-        std::shared_ptr<RepoTreeNode> rootPtr =
-            std::make_shared<RepoTreeNode>();
-        rootPtr->isDir = true;
-        rootPtr->name = "Repository";
-        s.repoData.rootPtr = rootPtr;
-        s.repoData.hasLoaded = true;
-    }
     // set hdd combobox
-    setHddComboboxView();
+    setHddComboboxView();  // 此时会触发combo box的回调来设置hdd tree view
     // set repository tree view
-    s.repoData.model = make_shared<RepoTreeModel>(s.repoData.rootPtr);
     s.uiData->repoTreeView->setModel(s.repoData.model.get());
 }
 
@@ -170,11 +130,6 @@ void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
     if (index < 0 || index >= s.hddDataList.size())
         return;
     auto &hddData = s.hddDataList[index];
-    QString path =
-        JsonFileDirPath + JsonFileDirName + "/" + hddData.labelName + ".txt";
-    hddData.TryLoadJson(path);
-    if (hddData.model == nullptr)
-        hddData.model = make_shared<HddTreeModel>(hddData.rootPtr);
     s.uiData->hddTreeView->setModel(hddData.model.get());
 }
 
@@ -297,14 +252,7 @@ void MainWindow::on_nodeclareBtn_clicked() {
 
 // 保存所有HDD
 void MainWindow::on_saveHddBtn_clicked() {
-    for (auto &hddData : s.hddDataList) {
-        if (hddData.isDirty == false)
-            continue;
-        QString filePath = JsonFileDirPath + JsonFileDirName + "/" +
-                           hddData.labelName + ".txt";
-        TreeNode::saveTreeToFile(hddData.rootPtr, filePath);
-        hddData.isDirty = false;
-    }
+    s.SaveAllHddData();
 }
 
 // repo tree view点击
@@ -367,10 +315,7 @@ void MainWindow::on_jumpToRepoNodeBtn_clicked() {
 void MainWindow::on_pushButton_3_clicked() {
     if (s.repoData.isDirty == false)
         return;
-    QString filePath =
-        JsonFileDirPath + JsonFileDirName + "/" + RepoJsonFileName;
-    TreeNode::saveTreeToFile(s.repoData.rootPtr, filePath);
-    s.repoData.isDirty = false;
+    s.SaveRepoData();
 }
 
 // 删除repo节点

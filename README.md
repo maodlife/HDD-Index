@@ -11,10 +11,10 @@ HDD Index is a Qt/C++ program that can organize and browse disk indexes.
 - [x] 复制文件层级，但不声明持有
 - [x] 放弃声明持有
 - [x] 跳转到能声明持有的repo节点
+- [x] 启动时把model也创建了
 
 ### High Priority
 
-- [ ] 启动时把model也创建了
 - [ ] 删除节点时删除saveData信息
 - [ ] 搜索节点
 - [ ] 重命名repo节点, 同时更新相关信息

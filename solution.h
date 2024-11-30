@@ -47,11 +47,17 @@ public:
     std::vector<HddData> hddDataList;
     RepoData repoData;
     UIData *uiData;
+    // 暂存剪切的repo节点
+    std::shared_ptr<RepoTreeNode> currCutRepoNode;
+
+    QString ProgramDirPath;  // 程序文件保存路径
+    QString JsonFileDirName;  // Json文件目录名
+    QString RepoJsonFileName;  // Repo数据文件名
 
     Solution();
 
-    // 暂存剪切的repo节点
-    std::shared_ptr<RepoTreeNode> currCutRepoNode;
+    void SaveRepoData();
+    void SaveAllHddData();
 
     // 检查右边能否声明持有左边，要求左边的所有文件和结构都在右边中，但右边可以有多余的
     static bool CheckCanDeclare(std::shared_ptr<TreeNode> leftPtr,
@@ -63,6 +69,7 @@ public:
                                          QModelIndex &index);
 
 private:
+    void InitDirPathValue();
 };
 
 #endif // SOLUTION_H
