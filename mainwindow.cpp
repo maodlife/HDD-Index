@@ -338,7 +338,6 @@ void MainWindow::on_deleteRepoNodeBtn_clicked() {
                 [=](const auto &value) { return value.labelName == hddLabel; });
             auto targetPtr =
                 TreeNode::getPtrFromPath(hddData.rootPtr, saveData.treePath);
-            // bug fix todo: 要区分tree view是否active
             auto rightIndex = hddData.model->findIndexByTreeNode(targetPtr);
             hddData.model->NoDeclare(rightIndex);
             hddData.isDirty = true;
