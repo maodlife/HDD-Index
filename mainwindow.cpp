@@ -322,7 +322,18 @@ void MainWindow::on_pushButton_3_clicked() {
 
 void MainWindow::on_searchRepoNodeLineEdit_textChanged()
 {
-
+    auto text = s.uiData->searchRepoNodeLineEdit->text();
+    if (text.isEmpty())
+        return;
+    auto founds = TreeNode::findIfInTree(s.repoData.rootPtr,
+                                         [=](const auto &ptr){
+                                             return ptr->name.contains(text);
+                                         });
+    if (founds.empty())
+        return;
+    auto found = founds[0];
+    auto index = s.repoData.model->findIndexByTreeNode(found);
+    s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, index);
 }
 
 // 删除repo节点
