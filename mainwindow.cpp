@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     s.uiData->CreataUIData(this);
     connectUiData();
     // set hdd combobox
-    setHddComboboxView();  // 此时会触发combo box的回调来设置hdd tree view
+    setHddComboboxView(); // 此时会触发combo box的回调来设置hdd tree view
     // set repository tree view
     s.uiData->repoTreeView->setModel(s.repoData.model.get());
 }
@@ -157,9 +157,14 @@ void MainWindow::setHddComboboxView() {
 }
 
 void MainWindow::setSearchResultView() {
+    if (this->searchRepoNodeResult.empty()) {
+        s.uiData->searchRepoNodeResultLabel->setText("0/0");
+        return;
+    }
     QString label = "%1/%2";
     s.uiData->searchRepoNodeResultLabel->setText(
-        label.arg(searchRepoNodeReusltIdx+1).arg(searchRepoNodeResult.size()));
+        label.arg(searchRepoNodeReusltIdx + 1)
+            .arg(searchRepoNodeResult.size()));
     auto found = searchRepoNodeResult[searchRepoNodeReusltIdx];
     auto index = s.repoData.model->findIndexByTreeNode(found);
     s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, index);
@@ -266,9 +271,7 @@ void MainWindow::on_nodeclareBtn_clicked() {
 }
 
 // 保存所有HDD
-void MainWindow::on_saveHddBtn_clicked() {
-    s.SaveAllHddData();
-}
+void MainWindow::on_saveHddBtn_clicked() { s.SaveAllHddData(); }
 
 // repo tree view点击
 void MainWindow::on_repoTreeView_clicked(const QModelIndex &index) {
@@ -333,23 +336,29 @@ void MainWindow::on_pushButton_3_clicked() {
     s.SaveRepoData();
 }
 
-void MainWindow::on_searchRepoNodeLineEdit_textChanged()
-{
+void MainWindow::on_searchRepoNodeLineEdit_textChanged() {
     auto text = s.uiData->searchRepoNodeLineEdit->text();
-    if (text.isEmpty())
+    if (text.isEmpty()) {
+        searchRepoNodeResult.clear();
+        searchRepoNodeReusltIdx = 0;
+        setSearchResultView();
         return;
-    searchRepoNodeResult = TreeNode::findIfInTree(s.repoData.rootPtr,
-                                         [=](const auto &ptr){
-                                             return ptr->name.contains(text);
-                                         });
-    if (searchRepoNodeResult.empty())
+    }
+    searchRepoNodeResult =
+        TreeNode::findIfInTree(s.repoData.rootPtr, [=](const auto &ptr) {
+            return ptr->name.contains(text);
+        });
+    if (searchRepoNodeResult.empty()) {
+        searchRepoNodeResult.clear();
+        searchRepoNodeReusltIdx = 0;
+        setSearchResultView();
         return;
+    }
     searchRepoNodeReusltIdx = 0;
     setSearchResultView();
 }
 
-void MainWindow::on_searchRepoNodePrevBtn_clicked()
-{
+void MainWindow::on_searchRepoNodePrevBtn_clicked() {
     if (searchRepoNodeResult.empty())
         return;
     if (searchRepoNodeReusltIdx == 0)
@@ -359,8 +368,7 @@ void MainWindow::on_searchRepoNodePrevBtn_clicked()
     setSearchResultView();
 }
 
-void MainWindow::on_searchRepoNodeNextBtn_clicked()
-{
+void MainWindow::on_searchRepoNodeNextBtn_clicked() {
     if (searchRepoNodeResult.empty())
         return;
     if (searchRepoNodeReusltIdx == searchRepoNodeResult.size() - 1)

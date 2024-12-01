@@ -124,6 +124,7 @@ void UIData::CreataUIData(QMainWindow *parent) {
     searchRepoNodeLineEdit = new QLineEdit(splitterSearchRepo);
     searchRepoNodeLineEdit->setPlaceholderText("搜索repo节点");
     searchRepoNodeResultLabel = new QLabel();
+    searchRepoNodeResultLabel->setText("0/0");
     searchRepoNodePrevBtn = new QPushButton();
     searchRepoNodePrevBtn->setText("上一个");
     searchRepoNodeNextBtn = new QPushButton();
