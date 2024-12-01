@@ -123,7 +123,15 @@ void UIData::CreataUIData(QMainWindow *parent) {
         new QSplitter(Qt::Horizontal, splitterLeft);
     searchRepoNodeLineEdit = new QLineEdit(splitterSearchRepo);
     searchRepoNodeLineEdit->setPlaceholderText("搜索repo节点");
+    searchRepoNodeResultLabel = new QLabel();
+    searchRepoNodePrevBtn = new QPushButton();
+    searchRepoNodePrevBtn->setText("上一个");
+    searchRepoNodeNextBtn = new QPushButton();
+    searchRepoNodeNextBtn->setText("下一个");
     splitterSearchRepo->addWidget(searchRepoNodeLineEdit);
+    splitterSearchRepo->addWidget(searchRepoNodeResultLabel);
+    splitterSearchRepo->addWidget(searchRepoNodePrevBtn);
+    splitterSearchRepo->addWidget(searchRepoNodeNextBtn);
 
     QSplitter *splitterCreateRepoSubDir =
         new QSplitter(Qt::Horizontal, splitterLeft);

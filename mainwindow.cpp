@@ -60,6 +60,10 @@ void MainWindow::connectUiData() {
             &MainWindow::on_pushButton_3_clicked);
     connect(s.uiData->searchRepoNodeLineEdit, &QLineEdit::textChanged, this,
             &MainWindow::on_searchRepoNodeLineEdit_textChanged);
+    connect(s.uiData->searchRepoNodePrevBtn, &QPushButton::clicked, this,
+            &MainWindow::on_searchRepoNodePrevBtn_clicked);
+    connect(s.uiData->searchRepoNodePrevBtn, &QPushButton::clicked, this,
+            &MainWindow::on_searchRepoNodeNextBtn_clicked);
     connect(s.uiData->createRepoSubDirBtn, &QPushButton::clicked, this,
             &MainWindow::on_createDirBtn_clicked);
     connect(s.uiData->renameRepoDirBtn, &QPushButton::clicked, this,
@@ -150,6 +154,15 @@ void MainWindow::setHddComboboxView() {
     for (const auto &hddData : std::as_const(s.hddDataList)) {
         s.uiData->hddComboBox->addItem(hddData.labelName);
     }
+}
+
+void MainWindow::setSearchResultView() {
+    QString label = "%1/%2";
+    s.uiData->searchRepoNodeResultLabel->setText(
+        label.arg(searchRepoNodeReusltIdx+1).arg(searchRepoNodeResult.size()));
+    auto found = searchRepoNodeResult[searchRepoNodeReusltIdx];
+    auto index = s.repoData.model->findIndexByTreeNode(found);
+    s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, index);
 }
 
 // 新建至Repo，并声明持有
@@ -325,15 +338,36 @@ void MainWindow::on_searchRepoNodeLineEdit_textChanged()
     auto text = s.uiData->searchRepoNodeLineEdit->text();
     if (text.isEmpty())
         return;
-    auto founds = TreeNode::findIfInTree(s.repoData.rootPtr,
+    searchRepoNodeResult = TreeNode::findIfInTree(s.repoData.rootPtr,
                                          [=](const auto &ptr){
                                              return ptr->name.contains(text);
                                          });
-    if (founds.empty())
+    if (searchRepoNodeResult.empty())
         return;
-    auto found = founds[0];
-    auto index = s.repoData.model->findIndexByTreeNode(found);
-    s.ExpandAndSetTreeViewNode(s.uiData->repoTreeView, index);
+    searchRepoNodeReusltIdx = 0;
+    setSearchResultView();
+}
+
+void MainWindow::on_searchRepoNodePrevBtn_clicked()
+{
+    if (searchRepoNodeResult.empty())
+        return;
+    if (searchRepoNodeReusltIdx == 0)
+        searchRepoNodeReusltIdx = searchRepoNodeResult.size() - 1;
+    else
+        searchRepoNodeReusltIdx--;
+    setSearchResultView();
+}
+
+void MainWindow::on_searchRepoNodeNextBtn_clicked()
+{
+    if (searchRepoNodeResult.empty())
+        return;
+    if (searchRepoNodeReusltIdx == searchRepoNodeResult.size() - 1)
+        searchRepoNodeReusltIdx = 0;
+    else
+        searchRepoNodeReusltIdx++;
+    setSearchResultView();
 }
 
 // 删除repo节点

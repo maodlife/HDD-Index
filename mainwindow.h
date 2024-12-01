@@ -61,6 +61,12 @@ private:
     // 搜索repo节点
     void on_searchRepoNodeLineEdit_textChanged();
 
+    // 跳转到上一个搜索结果
+    void on_searchRepoNodePrevBtn_clicked();
+
+    // 跳转到下一个搜索结果
+    void on_searchRepoNodeNextBtn_clicked();
+
     // 删除repo节点
     void on_deleteRepoNodeBtn_clicked();
 
@@ -86,6 +92,12 @@ private:
     Ui::MainWindow *ui;
     Solution s;
 
+    // 搜索结果
+    std::vector<std::shared_ptr<TreeNode>> searchRepoNodeResult;
+    int searchRepoNodeReusltIdx;
+
     void setHddComboboxView();
+
+    void setSearchResultView();
 };
 #endif // MAINWINDOW_H

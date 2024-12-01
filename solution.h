@@ -9,12 +9,16 @@
 #include <QPushButton>
 #include <QSplitter>
 #include <QTreeView>
+#include <QLabel>
 #include <vector>
 
 struct UIData {
     // left ui
     QPushButton *saveRepoBtn;
     QLineEdit *searchRepoNodeLineEdit;
+    QLabel *searchRepoNodeResultLabel;
+    QPushButton *searchRepoNodePrevBtn;
+    QPushButton *searchRepoNodeNextBtn;
     QTreeView *repoTreeView;
     QLineEdit *createDirNameLineEdit;
     QPushButton *createRepoSubDirBtn;
