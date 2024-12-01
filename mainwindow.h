@@ -22,6 +22,42 @@ public:
 protected:
     void closeEvent(QCloseEvent *event) override;
 
+    // UI
+private:
+    // left ui
+    QPushButton *saveRepoBtn;
+    QLineEdit *searchRepoNodeLineEdit;
+    QLabel *searchRepoNodeResultLabel;
+    QPushButton *searchRepoNodePrevBtn;
+    QPushButton *searchRepoNodeNextBtn;
+    QTreeView *repoTreeView;
+    QLineEdit *createDirNameLineEdit;
+    QPushButton *createRepoSubDirBtn;
+    QPushButton *renameRepoDirBtn;
+    QComboBox *repoSaveDataHddComboBox;
+    QPushButton *jmpRepoSaveDataHddBtn;
+    QPushButton *deleteRepoNodeBtn;
+    QPushButton *cutRepoNodeBtn;
+    QPushButton *pasteRepoNodeBtn;
+    // right ui
+    QComboBox *hddComboBox;
+    QPushButton *refreshHddBtn;
+    QPushButton *saveHddBtn;
+    QLineEdit *hddLabelNameLineEdit;
+    QPushButton *addHddBtn;
+    QPushButton *deleteHddBtn;
+    QTreeView *hddTreeView;
+    QPushButton *createRepoAndDeclareBtn;
+    QPushButton *declareBtn;
+    QPushButton *nodeclareBtn;
+    QPushButton *jmpToRepoNodeBtn;
+    QPushButton *copyHddTreeToRepoBtn;
+    QPushButton *guessCanDeclareBtn;
+    QPushButton *findSameNameBtn;
+
+    void CreataUIData(QMainWindow *parent);
+
+    // UI Callback
 private:
     void connectUiData();
 
