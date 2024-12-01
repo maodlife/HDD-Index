@@ -62,7 +62,7 @@ void MainWindow::connectUiData() {
             &MainWindow::on_searchRepoNodeLineEdit_textChanged);
     connect(s.uiData->searchRepoNodePrevBtn, &QPushButton::clicked, this,
             &MainWindow::on_searchRepoNodePrevBtn_clicked);
-    connect(s.uiData->searchRepoNodePrevBtn, &QPushButton::clicked, this,
+    connect(s.uiData->searchRepoNodeNextBtn, &QPushButton::clicked, this,
             &MainWindow::on_searchRepoNodeNextBtn_clicked);
     connect(s.uiData->createRepoSubDirBtn, &QPushButton::clicked, this,
             &MainWindow::on_createDirBtn_clicked);
