@@ -127,7 +127,7 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     hddComboBox = new QComboBox(splitterHddView);
     splitterHddView->addWidget(hddComboBox);
     refreshHddBtn = new QPushButton(splitterHddView);
-    refreshHddBtn->setText("刷新");
+    refreshHddBtn->setText("读取文件夹并刷新");
     splitterHddView->addWidget(refreshHddBtn);
     saveHddBtn = new QPushButton(splitterHddView);
     saveHddBtn->setText("保存所有HDD");
@@ -137,10 +137,10 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     hddLabelNameLineEdit = new QLineEdit(splitterHddOp);
     splitterHddOp->addWidget(hddLabelNameLineEdit);
     addHddBtn = new QPushButton(splitterRight);
-    addHddBtn->setText("添加");
+    addHddBtn->setText("读取文件夹并添加HDD");
     splitterHddOp->addWidget(addHddBtn);
     deleteHddBtn = new QPushButton(splitterRight);
-    deleteHddBtn->setText("删除当前");
+    deleteHddBtn->setText("删除当前HDD");
     splitterHddOp->addWidget(deleteHddBtn);
 
     hddTreeView = new QTreeView(splitterRight);
@@ -201,8 +201,8 @@ void MainWindow::connectUiData() {
             &MainWindow::on_cutBtn_clicked);
     connect(this->pasteRepoNodeBtn, &QPushButton::clicked, this,
             &MainWindow::on_pasteRepoBtn_clicked);
-    // connect(this->refreshHddBtn, &QPushButton::clicked, this,
-    // &MainWindow::on_cutBtn_clicked);
+    connect(this->refreshHddBtn, &QPushButton::clicked, this,
+            &MainWindow::on_refreshHddBtn_clicked);
     connect(this->saveHddBtn, &QPushButton::clicked, this,
             &MainWindow::on_saveHddBtn_clicked);
     connect(this->addHddBtn, &QPushButton::clicked, this,
@@ -254,6 +254,13 @@ void MainWindow::on_addNewBtn_clicked() {
     s.hddDataList.push_back(hddData);
     // set hdd combobox
     setHddComboboxView();
+}
+
+// 刷新HDD
+void MainWindow::on_refreshHddBtn_clicked() {
+    QString selectDirPath = QFileDialog::getExistingDirectory(
+        nullptr, "Select Folder", "", QFileDialog::DontResolveSymlinks);
+    auto newHddRootPtr = HddTreeNode::CreateTreeNodeByDirPath(selectDirPath);
 }
 
 // 选择hddComboBox

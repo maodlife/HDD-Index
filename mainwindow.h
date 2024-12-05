@@ -64,6 +64,9 @@ private:
     // 添加HDD
     void on_addNewBtn_clicked();
 
+    // 刷新HDD
+    void on_refreshHddBtn_clicked();
+
     // 选择hddComboBox
     void on_hddComboBox_currentIndexChanged(int index);
 

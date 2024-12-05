@@ -18,9 +18,10 @@ HDD Index is a Qt/C++ program that can organize and browse disk indexes.
 
 ### High Priority
 
+- [ ] 尝试打开HDD节点对应的本地文件夹
+- [ ] 链接到实际磁盘，并刷新、调整文件层级
 - [ ] 重命名repo节点, 同时更新相关信息
 - [ ] HDD节点标记为可删除
-- [ ] 链接到实际磁盘，并刷新、调整文件层级
 
 ### Low Priority
 
