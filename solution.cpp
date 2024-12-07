@@ -57,7 +57,7 @@ void Solution::SaveAllHddData() {
             continue;
         QString filePath = ProgramDirPath + "/" + JsonFileDirName + "/" +
                            hddData.labelName + ".txt";
-        TreeNode::saveTreeToFile(hddData.rootPtr, filePath);
+        hddData.SaveToFile(filePath);
         hddData.isDirty = false;
     }
 }

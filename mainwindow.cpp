@@ -287,9 +287,12 @@ void MainWindow::on_setLocalFileRootBtn_clicked() {
     auto &hddData = s.hddDataList[this->hddComboBox->currentIndex()];
     QString selectDirPath = QFileDialog::getExistingDirectory(
         nullptr, "Select Folder", "", QFileDialog::DontResolveSymlinks);
-    hddData.dirPath = selectDirPath;
-    emit this->hddComboBox->currentIndexChanged(
-        this->hddComboBox->currentIndex());
+    if (hddData.dirPath != selectDirPath) {
+        hddData.dirPath = selectDirPath;
+        hddData.isDirty = true;
+        emit this->hddComboBox->currentIndexChanged(
+            this->hddComboBox->currentIndex());
+    }
 }
 
 // 打开对应本地目录

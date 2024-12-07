@@ -12,6 +12,8 @@ struct HddData {
     bool isDirty = false;
     QString dirPath; // 本地磁盘对应root的目录绝对路径
 
+    void SaveToFile(const QString &filePath);
+
     void LoadJson(QString path);
     void TryLoadJson(QString path);
 };
