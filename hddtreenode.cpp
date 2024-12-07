@@ -1,6 +1,8 @@
 #include "hddtreenode.h"
 #include <QDir>
+#include <memory>
 #include <queue>
+#include <utility>
 
 using namespace std;
 
@@ -9,7 +11,6 @@ HddTreeNode::HddTreeNode() : TreeNode() {}
 QJsonObject HddTreeNode::toJsonObject() const
 {
     auto json = TreeNode::toJsonObject();
-    json["dirPath"] = dirPath;
     QJsonObject saveDataJson;
     saveDataJson["path"] = this->saveData.path;
     json["saveData"] = saveDataJson;
@@ -20,34 +21,31 @@ std::shared_ptr<HddTreeNode> HddTreeNode::CreateTreeNodeByDirPath(QString path)
 {
     QDir baseDir(path);
     std::shared_ptr<HddTreeNode> rootPtr = std::make_shared<HddTreeNode>();
-    rootPtr->dirPath = path;
+    auto rootPair = std::make_pair(rootPtr, path);
     rootPtr->name = baseDir.dirName();
     rootPtr->isDir = true;
-    queue<shared_ptr<HddTreeNode>> dirQueue;
-    dirQueue.push(rootPtr);
+    queue<decltype(rootPair)> dirQueue;
+    dirQueue.push(rootPair);
     while (!dirQueue.empty()) {
-        auto currPtr = dirQueue.front();
-        qDebug() << currPtr->dirPath;
+        auto currPair = dirQueue.front();
+        qDebug() << currPair.second;
         dirQueue.pop();
-        if (currPtr->isDir == false)
+        if (currPair.first->isDir == false)
             continue;
-        QDir dir(currPtr->dirPath);
+        QDir dir(currPair.second);
         auto dirList = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
         for (auto &item : dirList) {
-            std::shared_ptr<HddTreeNode> dirPtr = std::make_shared<HddTreeNode>();
-            dirPtr->dirPath = item.filePath();
+            auto dirPtr = std::make_shared<HddTreeNode>();
             dirPtr->name = item.fileName();
-            dirPtr->parent = currPtr;
+            dirPtr->parent = currPair.first;
             dirPtr->isDir = item.isDir();
-            currPtr->childs.push_back(dirPtr);
-            dirQueue.push(dirPtr);
+            currPair.first->childs.push_back(dirPtr);
+            dirQueue.push(std::make_pair(dirPtr, item.filePath()));
         }
     }
     return rootPtr;
 }
 
-void HddTreeNode::fromJsonObjectExtend(const QJsonObject &json)
-{
-    this->dirPath = json["dirPath"].toString();
+void HddTreeNode::fromJsonObjectExtend(const QJsonObject &json) {
     this->saveData.path = json["saveData"]["path"].toString();
 }

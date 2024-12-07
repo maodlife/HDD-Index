@@ -1,9 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include "solution.h"
 #include <QCloseEvent>
+#include <QMainWindow>
+#include <qpushbutton.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -41,12 +42,15 @@ private:
     QPushButton *pasteRepoNodeBtn;
     // right ui
     QComboBox *hddComboBox;
-    QPushButton *refreshHddBtn;
     QPushButton *saveHddBtn;
     QLineEdit *hddLabelNameLineEdit;
     QPushButton *addHddBtn;
     QPushButton *deleteHddBtn;
     QTreeView *hddTreeView;
+    QLabel *localFileLabel;           // 显示连接的本地磁盘信息
+    QPushButton *setLocalFileRootBtn; // 设置根目录的本地连接
+    QPushButton *refreshHddBtn;       // 刷新HDD与本地磁盘连接
+    QPushButton *openLocalFileBtn;
     QPushButton *createRepoAndDeclareBtn;
     QPushButton *declareBtn;
     QPushButton *nodeclareBtn;

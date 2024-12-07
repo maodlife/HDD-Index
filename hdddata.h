@@ -10,6 +10,7 @@ struct HddData {
     QString labelName;
     bool hasLoaded = false;
     bool isDirty = false;
+    QString dirPath; // 本地磁盘对应root的目录绝对路径
 
     void LoadJson(QString path);
     void TryLoadJson(QString path);

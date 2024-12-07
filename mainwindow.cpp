@@ -12,6 +12,9 @@
 #include <QtWidgets/qpushbutton.h>
 #include <algorithm>
 #include <memory>
+#include <qlabel.h>
+#include <qnamespace.h>
+#include <qsplitter.h>
 
 using namespace std;
 
@@ -126,9 +129,6 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     QSplitter *splitterHddView = new QSplitter(Qt::Horizontal, splitterLeft);
     hddComboBox = new QComboBox(splitterHddView);
     splitterHddView->addWidget(hddComboBox);
-    refreshHddBtn = new QPushButton(splitterHddView);
-    refreshHddBtn->setText("读取文件夹并刷新");
-    splitterHddView->addWidget(refreshHddBtn);
     saveHddBtn = new QPushButton(splitterHddView);
     saveHddBtn->setText("保存所有HDD");
     splitterHddView->addWidget(saveHddBtn);
@@ -144,6 +144,20 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     splitterHddOp->addWidget(deleteHddBtn);
 
     hddTreeView = new QTreeView(splitterRight);
+
+    localFileLabel = new QLabel(splitterRight);
+    splitterRight->addWidget(localFileLabel);
+
+    QSplitter *splitterLocalFile = new QSplitter(Qt::Horizontal, splitterRight);
+    setLocalFileRootBtn = new QPushButton(splitterLocalFile);
+    setLocalFileRootBtn->setText("连接到本地目录");
+    splitterLocalFile->addWidget(setLocalFileRootBtn);
+    openLocalFileBtn = new QPushButton(splitterLocalFile);
+    openLocalFileBtn->setText("打开对应目录");
+    splitterLocalFile->addWidget(openLocalFileBtn);
+    refreshHddBtn = new QPushButton(splitterLocalFile);
+    refreshHddBtn->setText("读取文件夹并全量刷新");
+    splitterLocalFile->addWidget(refreshHddBtn);
 
     QSplitter *splitterHddNodeOp = new QSplitter(Qt::Horizontal, splitterRight);
     createRepoAndDeclareBtn = new QPushButton(splitterHddNodeOp);
@@ -174,6 +188,8 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     splitterRight->addWidget(splitterHddView);
     splitterRight->addWidget(splitterHddOp);
     splitterRight->addWidget(hddTreeView);
+    splitterRight->addWidget(localFileLabel);
+    splitterRight->addWidget(splitterLocalFile);
     splitterRight->addWidget(splitterHddNodeOp);
     splitterRight->addWidget(splitterHddNodeOp2);
 
@@ -251,6 +267,8 @@ void MainWindow::on_addNewBtn_clicked() {
     hddData.labelName = hddLabel;
     hddData.hasLoaded = true;
     hddData.isDirty = true;
+    hddData.dirPath = selectDirPath;
+    hddData.model = make_shared<HddTreeModel>(hddData.rootPtr);
     s.hddDataList.push_back(hddData);
     // set hdd combobox
     setHddComboboxView();

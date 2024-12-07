@@ -11,7 +11,6 @@ struct DeclareSaveData {
 class HddTreeNode : public TreeNode
 {
 public:
-    QString dirPath; // 绝对路径，用于关联到实际磁盘
     DeclareSaveData saveData;
 
     HddTreeNode();
