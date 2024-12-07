@@ -60,7 +60,7 @@ std::shared_ptr<TreeNode> TreeNode::get_shared_ptr(TreeNode *ptr) {
     return *ret;
 }
 
-QString TreeNode::getPath() {
+QString TreeNode::getPath(bool includeRoot) {
     stack<QString> stack;
     stack.push(this->name);
     auto curr = this->parent.lock();
@@ -69,7 +69,13 @@ QString TreeNode::getPath() {
         curr = curr->parent.lock();
     }
     QString ret;
+    bool isFirst = true;
     while (stack.empty() == false) {
+        if (isFirst && !includeRoot) { // 跳过root
+            isFirst = false;
+            stack.pop();
+            continue;
+        }
         ret += stack.top();
         ret += "/";
         stack.pop();

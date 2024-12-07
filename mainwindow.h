@@ -68,6 +68,12 @@ private:
     // 添加HDD
     void on_addNewBtn_clicked();
 
+    // hdd连接到本地磁盘
+    void on_setLocalFileRootBtn_clicked();
+
+    // 打开对应本地目录
+    void on_openLocalFileBtn_clicked();
+
     // 刷新HDD
     void on_refreshHddBtn_clicked();
 

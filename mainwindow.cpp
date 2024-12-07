@@ -2,17 +2,21 @@
 #include "./ui_mainwindow.h"
 #include "hddtreenode.h"
 #include "repotreenode.h"
+#include "solution.h"
 #include "treenode.h"
 #include <QDebug>
+#include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStandardPaths>
+#include <QUrl>
 #include <QtCore/qstringliteral.h>
 #include <QtWidgets/qpushbutton.h>
 #include <algorithm>
 #include <memory>
 #include <qlabel.h>
+#include <qlogging.h>
 #include <qnamespace.h>
 #include <qsplitter.h>
 
@@ -217,6 +221,10 @@ void MainWindow::connectUiData() {
             &MainWindow::on_cutBtn_clicked);
     connect(this->pasteRepoNodeBtn, &QPushButton::clicked, this,
             &MainWindow::on_pasteRepoBtn_clicked);
+    connect(this->setLocalFileRootBtn, &QPushButton::clicked, this,
+            &MainWindow::on_setLocalFileRootBtn_clicked);
+    connect(this->openLocalFileBtn, &QPushButton::clicked, this,
+            &MainWindow::on_openLocalFileBtn_clicked);
     connect(this->refreshHddBtn, &QPushButton::clicked, this,
             &MainWindow::on_refreshHddBtn_clicked);
     connect(this->saveHddBtn, &QPushButton::clicked, this,
@@ -274,6 +282,29 @@ void MainWindow::on_addNewBtn_clicked() {
     setHddComboboxView();
 }
 
+// hdd连接到本地磁盘
+void MainWindow::on_setLocalFileRootBtn_clicked() {
+    auto &hddData = s.hddDataList[this->hddComboBox->currentIndex()];
+    QString selectDirPath = QFileDialog::getExistingDirectory(
+        nullptr, "Select Folder", "", QFileDialog::DontResolveSymlinks);
+    hddData.dirPath = selectDirPath;
+    emit this->hddComboBox->currentIndexChanged(
+        this->hddComboBox->currentIndex());
+}
+
+// 打开对应本地目录
+void MainWindow::on_openLocalFileBtn_clicked() {
+    const auto &hddData = s.hddDataList[this->hddComboBox->currentIndex()];
+    const auto &treeViewIndex = this->hddTreeView->currentIndex();
+    auto hddTreeNode = hddData.model->GetSharedPtr(treeViewIndex);
+    auto subPath = hddTreeNode->getPath(false);
+    qDebug() << subPath;
+    QString path = QDir(hddData.dirPath).filePath(subPath);
+    qDebug() << path;
+    // 用这个接口打开后无法选中文件
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
+
 // 刷新HDD
 void MainWindow::on_refreshHddBtn_clicked() {
     QString selectDirPath = QFileDialog::getExistingDirectory(
@@ -287,6 +318,9 @@ void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
         return;
     auto &hddData = s.hddDataList[index];
     this->hddTreeView->setModel(hddData.model.get());
+
+    this->localFileLabel->setText(
+        hddData.dirPath.isEmpty() ? "未连接到本地磁盘" : "已连接到本地磁盘");
 }
 
 // 创建子目录

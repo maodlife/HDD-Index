@@ -47,7 +47,7 @@ public:
     static std::shared_ptr<TreeNode> get_shared_ptr(TreeNode *ptr);
 
     // 从root开始到自己的Path
-    QString getPath();
+    QString getPath(bool includeRoot = true);
 
     // 传入Path返回节点指针，Path的开头是rootPtr的name
     static std::shared_ptr<TreeNode>
