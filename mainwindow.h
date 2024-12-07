@@ -49,6 +49,7 @@ private:
     QTreeView *hddTreeView;
     QLabel *localFileLabel;           // 显示连接的本地磁盘信息
     QPushButton *setLocalFileRootBtn; // 设置根目录的本地连接
+    QPushButton *clearHddRootDirPathBtn; // 清除本地磁盘连接
     QPushButton *refreshHddBtn;       // 刷新HDD与本地磁盘连接
     QPushButton *openLocalFileBtn;
     QPushButton *createRepoAndDeclareBtn;
@@ -70,6 +71,9 @@ private:
 
     // hdd连接到本地磁盘
     void on_setLocalFileRootBtn_clicked();
+
+    // 清除本地磁盘链接
+    void on_clearHddRootDirPathBtn_clicked();
 
     // 打开对应本地目录
     void on_openLocalFileBtn_clicked();

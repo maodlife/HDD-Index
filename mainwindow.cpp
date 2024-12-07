@@ -149,13 +149,18 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
 
     hddTreeView = new QTreeView(splitterRight);
 
-    localFileLabel = new QLabel(splitterRight);
-    splitterRight->addWidget(localFileLabel);
+    QSplitter *splitterHddDirPath =
+        new QSplitter(Qt::Horizontal, splitterRight);
+    localFileLabel = new QLabel(splitterHddDirPath);
+    splitterHddDirPath->addWidget(localFileLabel);
+    setLocalFileRootBtn = new QPushButton(splitterHddDirPath);
+    setLocalFileRootBtn->setText("连接到本地目录");
+    splitterHddDirPath->addWidget(setLocalFileRootBtn);
+    clearHddRootDirPathBtn = new QPushButton(splitterHddDirPath);
+    clearHddRootDirPathBtn->setText("清除连接");
+    splitterHddDirPath->addWidget(clearHddRootDirPathBtn);
 
     QSplitter *splitterLocalFile = new QSplitter(Qt::Horizontal, splitterRight);
-    setLocalFileRootBtn = new QPushButton(splitterLocalFile);
-    setLocalFileRootBtn->setText("连接到本地目录");
-    splitterLocalFile->addWidget(setLocalFileRootBtn);
     openLocalFileBtn = new QPushButton(splitterLocalFile);
     openLocalFileBtn->setText("打开对应目录");
     splitterLocalFile->addWidget(openLocalFileBtn);
@@ -192,7 +197,7 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     splitterRight->addWidget(splitterHddView);
     splitterRight->addWidget(splitterHddOp);
     splitterRight->addWidget(hddTreeView);
-    splitterRight->addWidget(localFileLabel);
+    splitterRight->addWidget(splitterHddDirPath);
     splitterRight->addWidget(splitterLocalFile);
     splitterRight->addWidget(splitterHddNodeOp);
     splitterRight->addWidget(splitterHddNodeOp2);
@@ -223,6 +228,8 @@ void MainWindow::connectUiData() {
             &MainWindow::on_pasteRepoBtn_clicked);
     connect(this->setLocalFileRootBtn, &QPushButton::clicked, this,
             &MainWindow::on_setLocalFileRootBtn_clicked);
+    connect(this->clearHddRootDirPathBtn, &QPushButton::clicked, this,
+            &MainWindow::on_clearHddRootDirPathBtn_clicked);
     connect(this->openLocalFileBtn, &QPushButton::clicked, this,
             &MainWindow::on_openLocalFileBtn_clicked);
     connect(this->refreshHddBtn, &QPushButton::clicked, this,
@@ -295,6 +302,17 @@ void MainWindow::on_setLocalFileRootBtn_clicked() {
     }
 }
 
+// 清除本地磁盘链接
+void MainWindow::on_clearHddRootDirPathBtn_clicked() {
+    auto &hddData = s.hddDataList[this->hddComboBox->currentIndex()];
+    if (!hddData.dirPath.isEmpty()) {
+        hddData.dirPath.clear();
+        hddData.isDirty = true;
+        emit this->hddComboBox->currentIndexChanged(
+            this->hddComboBox->currentIndex());
+    }
+}
+
 // 打开对应本地目录
 void MainWindow::on_openLocalFileBtn_clicked() {
     const auto &hddData = s.hddDataList[this->hddComboBox->currentIndex()];
@@ -322,8 +340,9 @@ void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
     auto &hddData = s.hddDataList[index];
     this->hddTreeView->setModel(hddData.model.get());
 
-    this->localFileLabel->setText(
-        hddData.dirPath.isEmpty() ? "未连接到本地磁盘" : "已连接到本地磁盘");
+    this->localFileLabel->setText(hddData.dirPath.isEmpty()
+                                      ? "未连接到本地磁盘"
+                                      : "已连接到本地磁盘: " + hddData.dirPath);
 }
 
 // 创建子目录
