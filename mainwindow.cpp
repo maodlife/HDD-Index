@@ -203,7 +203,7 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     cutHddNodeBtn->setText("剪切");
     splitterHddNodeCut->addWidget(cutHddNodeBtn);
     pasteHddNodeBtn = new QPushButton(splitterHddNodeCut);
-    pasteHddNodeBtn->setText("剪切");
+    pasteHddNodeBtn->setText("粘贴");
     pasteHddNodeBtn->setEnabled(false);
     splitterHddNodeCut->addWidget(pasteHddNodeBtn);
 
@@ -768,6 +768,11 @@ void MainWindow::on_cutHddNodeBtn_clicked() {
         if (!rightIndex.isValid())
             return;
         auto &hddData = s.hddDataList[this->hddComboBox->currentIndex()];
+        if (hddData.dirPath.isEmpty()) {
+            QMessageBox::warning(this, tr("提示"), tr("还没有连接到本地磁盘"),
+                                 QMessageBox::Yes);
+            return;
+        }
         s.currCutHddNode = dynamic_pointer_cast<HddTreeNode>(
             hddData.model->GetSharedPtr(rightIndex));
         this->cutHddNodeBtn->setText("取消剪切");
@@ -779,4 +784,16 @@ void MainWindow::on_cutHddNodeBtn_clicked() {
     }
 }
 
-void MainWindow::on_pasteHddNodeBtn_clicked() {}
+void MainWindow::on_pasteHddNodeBtn_clicked() {
+    if (s.currCutHddNode == nullptr)
+        return;
+    auto &hddData = s.hddDataList[this->hddComboBox->currentIndex()];
+    auto rightIndex = this->hddTreeView->currentIndex();
+    auto newParentNode = dynamic_pointer_cast<HddTreeNode>(
+        hddData.model->GetSharedPtr(rightIndex));
+    // 检查是否有同名child
+
+    // 通过model移动treeNode
+    // 寻找受影响的declare node
+    // 修改左边
+}
