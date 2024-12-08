@@ -51,6 +51,7 @@ private:
     QPushButton *setLocalFileRootBtn; // 设置根目录的本地连接
     QPushButton *clearHddRootDirPathBtn; // 清除本地磁盘连接
     QPushButton *refreshHddBtn;       // 刷新HDD与本地磁盘连接
+    QPushButton *moveLocalFileBtn;    // 按照Repo目录层级移动
     QPushButton *openLocalFileBtn;
     QPushButton *createRepoAndDeclareBtn;
     QPushButton *declareBtn;
@@ -59,6 +60,8 @@ private:
     QPushButton *copyHddTreeToRepoBtn;
     QPushButton *guessCanDeclareBtn;
     QPushButton *findSameNameBtn;
+    QPushButton *cutHddNodeBtn;
+    QPushButton *pasteHddNodeBtn;
 
     void CreataUIData(QMainWindow *parent);
 
@@ -80,6 +83,9 @@ private:
 
     // 刷新HDD
     void on_refreshHddBtn_clicked();
+
+    // 移动本地文件
+    void on_moveLocalFileBtn_clicked();
 
     // 选择hddComboBox
     void on_hddComboBox_currentIndexChanged(int index);
@@ -140,6 +146,12 @@ private:
 
     // 跳转到同名的repo节点
     void on_findSameNameBtn_clicked();
+
+    // 剪切
+    void on_cutHddNodeBtn_clicked();
+
+    // 粘贴
+    void on_pasteHddNodeBtn_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -167,6 +167,9 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     refreshHddBtn = new QPushButton(splitterLocalFile);
     refreshHddBtn->setText("读取文件夹并全量刷新");
     splitterLocalFile->addWidget(refreshHddBtn);
+    moveLocalFileBtn = new QPushButton(splitterLocalFile);
+    moveLocalFileBtn->setText("按照Repo层级移动磁盘文件");
+    splitterLocalFile->addWidget(moveLocalFileBtn);
 
     QSplitter *splitterHddNodeOp = new QSplitter(Qt::Horizontal, splitterRight);
     createRepoAndDeclareBtn = new QPushButton(splitterHddNodeOp);
@@ -194,6 +197,16 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     findSameNameBtn->setText("跳转同名repo节点");
     splitterHddNodeOp2->addWidget(findSameNameBtn);
 
+    QSplitter *splitterHddNodeCut =
+        new QSplitter(Qt::Horizontal, splitterRight);
+    cutHddNodeBtn = new QPushButton(splitterHddNodeCut);
+    cutHddNodeBtn->setText("剪切");
+    splitterHddNodeCut->addWidget(cutHddNodeBtn);
+    pasteHddNodeBtn = new QPushButton(splitterHddNodeCut);
+    pasteHddNodeBtn->setText("剪切");
+    pasteHddNodeBtn->setEnabled(false);
+    splitterHddNodeCut->addWidget(pasteHddNodeBtn);
+
     splitterRight->addWidget(splitterHddView);
     splitterRight->addWidget(splitterHddOp);
     splitterRight->addWidget(hddTreeView);
@@ -201,6 +214,7 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     splitterRight->addWidget(splitterLocalFile);
     splitterRight->addWidget(splitterHddNodeOp);
     splitterRight->addWidget(splitterHddNodeOp2);
+    splitterRight->addWidget(splitterHddNodeCut);
 
     parent->setCentralWidget(splitter);
 }
@@ -234,6 +248,8 @@ void MainWindow::connectUiData() {
             &MainWindow::on_openLocalFileBtn_clicked);
     connect(this->refreshHddBtn, &QPushButton::clicked, this,
             &MainWindow::on_refreshHddBtn_clicked);
+    connect(this->moveLocalFileBtn, &QPushButton::clicked, this,
+            &MainWindow::on_moveLocalFileBtn_clicked);
     connect(this->saveHddBtn, &QPushButton::clicked, this,
             &MainWindow::on_saveHddBtn_clicked);
     connect(this->addHddBtn, &QPushButton::clicked, this,
@@ -258,6 +274,10 @@ void MainWindow::connectUiData() {
             &MainWindow::on_guessCanDeclareBtn_clicked);
     connect(this->findSameNameBtn, &QPushButton::clicked, this,
             &MainWindow::on_findSameNameBtn_clicked);
+    connect(this->cutHddNodeBtn, &QPushButton::clicked, this,
+            &MainWindow::on_cutHddNodeBtn_clicked);
+    connect(this->pasteHddNodeBtn, &QPushButton::clicked, this,
+            &MainWindow::on_pasteHddNodeBtn_clicked);
 }
 
 // 添加HDD
@@ -332,6 +352,9 @@ void MainWindow::on_refreshHddBtn_clicked() {
         nullptr, "Select Folder", "", QFileDialog::DontResolveSymlinks);
     auto newHddRootPtr = HddTreeNode::CreateTreeNodeByDirPath(selectDirPath);
 }
+
+// 移动本地文件
+void MainWindow::on_moveLocalFileBtn_clicked() {}
 
 // 选择hddComboBox
 void MainWindow::on_hddComboBox_currentIndexChanged(int index) {
@@ -657,10 +680,8 @@ void MainWindow::on_pasteRepoBtn_clicked() {
             auto targetPtr =
                 TreeNode::getPtrFromPath(hddData.rootPtr, saveData.treePath);
             auto hddTargetPtr = dynamic_pointer_cast<HddTreeNode>(targetPtr);
-            hddTargetPtr->saveData.path = leftNewPathStr;
             // 不能直接用model改，因为可能没有model（没有选中）
-            // hddData.model->ChangeDeclareRepoPath(hddTargetPtr,
-            // leftNewPathStr);
+            hddData.model->ChangeDeclareRepoPath(hddTargetPtr, leftNewPathStr);
             hddData.isDirty = true;
         }
     }
@@ -740,3 +761,22 @@ void MainWindow::on_findSameNameBtn_clicked() {
     auto repoIndex = s.repoData.model->findIndexByTreeNode(repoPtr);
     s.ExpandAndSetTreeViewNode(this->repoTreeView, repoIndex);
 }
+
+void MainWindow::on_cutHddNodeBtn_clicked() {
+    if (s.currCutHddNode == nullptr) {
+        auto rightIndex = this->hddTreeView->currentIndex();
+        if (!rightIndex.isValid())
+            return;
+        auto &hddData = s.hddDataList[this->hddComboBox->currentIndex()];
+        s.currCutHddNode = dynamic_pointer_cast<HddTreeNode>(
+            hddData.model->GetSharedPtr(rightIndex));
+        this->cutHddNodeBtn->setText("取消剪切");
+        this->pasteHddNodeBtn->setEnabled(true);
+    } else {
+        s.currCutHddNode = nullptr;
+        this->cutHddNodeBtn->setText("剪切");
+        this->pasteHddNodeBtn->setEnabled(false);
+    }
+}
+
+void MainWindow::on_pasteHddNodeBtn_clicked() {}
