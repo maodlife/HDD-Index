@@ -2,7 +2,7 @@
 
 HDD Index is a Qt/C++ program that can organize and browse disk indexes.
 
-![program](screenshots/program.jpg)
+![program](screenshots/屏幕截图_20241208_204308.jpg)
 
 ## Milestone
 
