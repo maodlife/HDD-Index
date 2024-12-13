@@ -26,6 +26,8 @@ public:
     QString ProgramDirPath;  // 程序文件保存路径
     QString JsonFileDirName;  // Json文件目录名
     QString RepoJsonFileName;  // Repo数据文件名
+    // 所有HddData的dirPath单独保存到一个文件
+    QString HddDataLocalDirPathFileName;
 
     Solution();
 

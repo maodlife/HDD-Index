@@ -4,6 +4,8 @@
 #include <QLabel>
 #include <QStandardPaths>
 #include <algorithm>
+#include <qjsonarray.h>
+#include <qjsonobject.h>
 
 using namespace std;
 
@@ -31,6 +33,32 @@ Solution::Solution() {
                        hddData.labelName + ".txt";
         hddData.TryLoadJson(path);
     }
+    // set hdd data local dir path
+    QString path = ProgramDirPath + "/" + JsonFileDirName + "/" +
+                   HddDataLocalDirPathFileName;
+    QFile file(path);
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray data = file.readAll();
+        file.close();
+
+        QJsonDocument doc = QJsonDocument::fromJson(data);
+        auto docJsonObj = doc.array();
+        for (auto p : docJsonObj) {
+            if (p.isObject()) {
+                auto pObj = p.toObject();
+                auto key = pObj["key"].toString();
+                auto value = pObj["value"].toString();
+                auto foundHddDataIt =
+                    std::find_if(hddDataList.begin(), hddDataList.end(),
+                                 [key](auto &x) { return x.labelName == key; });
+                if (foundHddDataIt != hddDataList.end()) {
+                    auto &hddData = *foundHddDataIt;
+                    hddData.dirPath = value;
+                }
+            }
+        }
+    }
+
     // init reposity if empty
     if (this->repoData.hasLoaded == false) {
         std::shared_ptr<RepoTreeNode> rootPtr =
@@ -52,13 +80,39 @@ void Solution::SaveRepoData()
 }
 
 void Solution::SaveAllHddData() {
+    bool haveDirty = false;
     for (auto &hddData : this->hddDataList) {
         if (hddData.isDirty == false)
             continue;
+        haveDirty = true;
         QString filePath = ProgramDirPath + "/" + JsonFileDirName + "/" +
                            hddData.labelName + ".txt";
         hddData.SaveToFile(filePath);
         hddData.isDirty = false;
+    }
+    if (!haveDirty)
+        return;
+    QString filePath = ProgramDirPath + "/" + JsonFileDirName + "/" +
+                       HddDataLocalDirPathFileName;
+    QJsonArray dirPathArray;
+    for (const auto &hddData : hddDataList) {
+        if (hddData.dirPath.isEmpty())
+            continue;
+        QJsonObject jsonObj;
+        jsonObj["key"] = hddData.labelName;
+        jsonObj["value"] = hddData.dirPath;
+        dirPathArray.append(jsonObj);
+    }
+    QJsonDocument doc(dirPathArray);
+    QFile file(filePath);
+    QDir dir;
+    if (!dir.mkpath(QFileInfo(filePath).path())) { // 创建所有必要的中间路径
+        qWarning("Failed to create directory path");
+        return;
+    }
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(doc.toJson());
+        file.close();
     }
 }
 
@@ -104,4 +158,5 @@ void Solution::InitDirPathValue() {
     }
     JsonFileDirName = "JsonFiles";
     RepoJsonFileName = "RepoTreeData.txt";
+    HddDataLocalDirPathFileName = "HddDataDirPath.txt";
 }
