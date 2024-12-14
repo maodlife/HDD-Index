@@ -20,6 +20,8 @@ Solution::Solution() {
             QString path =
                 ProgramDirPath + "/" + JsonFileDirName + "/" + RepoJsonFileName;
             this->repoData.TryLoadJson(path);
+        } else if (file.fileName() == HddDataLocalDirPathFileName) {
+            continue;
         } else {
             HddData hddData;
             hddData.labelName = file.fileName();
