@@ -15,6 +15,7 @@
 #include <QtWidgets/qpushbutton.h>
 #include <algorithm>
 #include <memory>
+#include <qdebug.h>
 #include <qlabel.h>
 #include <qlogging.h>
 #include <qnamespace.h>
@@ -792,7 +793,24 @@ void MainWindow::on_pasteHddNodeBtn_clicked() {
     auto newParentNode = dynamic_pointer_cast<HddTreeNode>(
         hddData.model->GetSharedPtr(rightIndex));
     // 检查是否有同名child
-
+    if (newParentNode->childs.end() !=
+        std::find_if(newParentNode->childs.begin(), newParentNode->childs.end(),
+                     [=, this](const auto &x) {
+                         return x->name == this->s.currCutHddNode->name;
+                     })) {
+        QMessageBox::StandardButton reply = QMessageBox::warning(
+            this, tr("同名子节点"), tr("存在同名子节点"), QMessageBox::Yes);
+        return;
+    }
+    // 移动磁盘中的文件夹
+    QString sourcePath =
+        QDir(hddData.dirPath).filePath(s.currCutHddNode->getPath(false));
+    QString destinationPath =
+        QDir(hddData.dirPath)
+            .filePath(newParentNode->getPath(false) + QDir::separator() +
+                      s.currCutHddNode->name);
+    qDebug() << sourcePath;
+    qDebug() << destinationPath;
     // 通过model移动treeNode
     // 寻找受影响的declare node
     // 修改左边
