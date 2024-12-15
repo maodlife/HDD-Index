@@ -1,4 +1,5 @@
 #include "treemodel.h"
+#include "treenode.h"
 #include <algorithm>
 #include <stack>
 
@@ -147,4 +148,27 @@ QModelIndex TreeModel::findIndexByTreeNode(std::stack<QString> stack) {
         }
     }
     return curr;
+}
+
+void TreeModel::CutTreeNode(std::shared_ptr<TreeNode> treeNode,
+                            std::shared_ptr<TreeNode> targetParentNode) {
+    // 如果已有同名文件夹，则跳过
+    if (find_if(targetParentNode->childs.begin(),
+                targetParentNode->childs.end(), [=](const auto &value) {
+                    return value->name == treeNode->name;
+                }) != targetParentNode->childs.end()) {
+        return;
+    }
+    this->beginResetModel();
+    // 原本的父节点里删掉
+    auto parent = treeNode->parent.lock();
+    parent->childs.erase(find_if(
+        parent->childs.begin(), parent->childs.end(),
+        [=](const auto &value) { return value->name == treeNode->name; }));
+    // 修改parent指针
+    treeNode->parent = targetParentNode;
+    // 新的父节点里增加
+    targetParentNode->childs.push_back(treeNode);
+    targetParentNode->sortChildByName();
+    this->endResetModel();
 }

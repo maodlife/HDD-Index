@@ -3,6 +3,7 @@
 
 #include "repotreenode.h"
 #include "treemodel.h"
+#include <memory>
 
 class RepoTreeModel : public TreeModel {
 private:
@@ -26,9 +27,9 @@ public:
     // 删除声明持有
     bool RemoveDeclare(const QModelIndex &index, QString hddLabel);
 
-    // 剪切粘贴
-    void CutRepoNode(std::shared_ptr<RepoTreeNode> repoNode,
-                     std::shared_ptr<RepoTreeNode> targetParentNode);
+    // 修改声明持有
+    bool ChangeDeclare(const QModelIndex &index, QString hddLabel,
+                       std::shared_ptr<TreeNode> hddNode);
 };
 
 #endif // REPOTREEMODEL_H

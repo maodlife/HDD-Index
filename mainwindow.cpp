@@ -661,7 +661,7 @@ void MainWindow::on_pasteRepoBtn_clicked() {
     auto newParentNode = dynamic_pointer_cast<RepoTreeNode>(
         s.repoData.model->GetSharedPtr(leftIndex));
     // 修改左边
-    s.repoData.model->CutRepoNode(s.currCutRepoNode, newParentNode);
+    s.repoData.model->CutTreeNode(s.currCutRepoNode, newParentNode);
     s.repoData.isDirty = true;
     // 寻找受影响的saveDatas repo node
     auto changedSaveDataRepoNodes =
@@ -818,7 +818,32 @@ void MainWindow::on_pasteHddNodeBtn_clicked() {
         return;
     }
     // 通过model移动treeNode
-    
+    hddData.model->CutTreeNode(s.currCutHddNode, newParentNode);
+    hddData.isDirty = true;
     // 寻找受影响的declare node
+    auto changedDeclareHddNodes =
+        TreeNode::findIfInTree(s.currCutHddNode, [](const auto &value) {
+            auto hddNode = dynamic_pointer_cast<HddTreeNode>(value);
+            return hddNode->saveData.path.size() != 0;
+        });
     // 修改左边
+    for (const auto &treeNode : changedDeclareHddNodes) {
+        auto hddTreeNode = dynamic_pointer_cast<HddTreeNode>(treeNode);
+        auto repoPath = hddTreeNode->saveData.path;
+        auto repoNode = TreeNode::getPtrFromPath(s.repoData.rootPtr, repoPath);
+        auto repoIndex = s.repoData.model->findIndexByTreeNode(repoNode);
+        bool repoChanged = s.repoData.model->ChangeDeclare(
+            repoIndex, hddData.labelName, s.currCutHddNode);
+        if (repoChanged) {
+            s.repoData.isDirty = true;
+        }
+    }
+    // 展开右边,选中原本选中的父节点
+    auto targetIndex =
+        hddData.model->findIndexByTreeNode(s.currCutHddNode->parent.lock());
+    s.ExpandAndSetTreeViewNode(this->hddTreeView, targetIndex);
+    // 恢复UI
+    s.currCutHddNode = nullptr;
+    this->cutHddNodeBtn->setText("剪切");
+    this->pasteHddNodeBtn->setEnabled(false);
 }

@@ -44,6 +44,10 @@ public:
     // 删除节点及子树
     void removeTreeNode(const QModelIndex &index);
 
+    // 剪切粘贴
+    void CutTreeNode(std::shared_ptr<TreeNode> treeNode,
+                     std::shared_ptr<TreeNode> targetParentNode);
+
 private:
     QModelIndex findIndexByTreeNode(std::stack<QString> stack);
 };

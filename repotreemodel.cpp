@@ -84,26 +84,21 @@ bool RepoTreeModel::RemoveDeclare(const QModelIndex &index, QString hddLabel)
     return true;
 }
 
-void RepoTreeModel::CutRepoNode(
-    std::shared_ptr<RepoTreeNode> repoNode,
-    std::shared_ptr<RepoTreeNode> targetParentNode) {
-    // 如果已有同名文件夹，则跳过
-    if (find_if(targetParentNode->childs.begin(), targetParentNode->childs.end(),
-                [=](const auto &value) {
-                    return value->name == repoNode->name;
-        }) != targetParentNode->childs.end()) {
-        return;
+bool RepoTreeModel::ChangeDeclare(const QModelIndex &index, QString hddLabel,
+                                  std::shared_ptr<TreeNode> hddNode) {
+    auto ptr =
+        std::dynamic_pointer_cast<RepoTreeNode>(this->GetSharedPtr(index));
+    auto foundIt =
+        find_if(ptr->nodeSaveDatas.begin(), ptr->nodeSaveDatas.end(),
+                [=](const auto &value) { return value.hddLabel == hddLabel; });
+
+    if (foundIt == ptr->nodeSaveDatas.end()) {
+        return false;
     }
+
     this->beginResetModel();
-    // 原本的父节点里删掉
-    auto parent = repoNode->parent.lock();
-    parent->childs.erase(find_if(
-        parent->childs.begin(), parent->childs.end(),
-        [=](const auto &value) { return value->name == repoNode->name; }));
-    // 修改parent指针
-    repoNode->parent = targetParentNode;
-    // 新的父节点里增加
-    targetParentNode->childs.push_back(repoNode);
-    targetParentNode->sortChildByName();
+    auto &saveData = *foundIt;
+    saveData.treePath = hddNode->getPath();
     this->endResetModel();
+    return true;
 }
