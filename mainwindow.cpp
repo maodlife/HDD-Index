@@ -395,6 +395,12 @@ void MainWindow::on_moveLocalFileBtn_clicked() {
         auto repoPath = hddNode->saveData.path;
         auto repoNode = TreeNode::getPtrFromPath(s.repoData.rootPtr, repoPath);
         auto newSubPath = repoNode->getPath(leftNode);
+        // 检查是否已经符合repo中的层级
+        auto originPath = hddNode->getPath(hddData.rootPtr);
+        if (originPath == newSubPath) {
+            result += tr("%1 无需移动\n").arg(hddNode->name);
+            continue;
+        }
         // 检查是否能移动到新的节点中
         auto newParentPath = QFileInfo(newSubPath).path();
         auto newParentNode =
@@ -423,13 +429,23 @@ void MainWindow::on_moveLocalFileBtn_clicked() {
         // 创建所有必要的中间路径
         QDir dir;
         if (!dir.mkpath(QFileInfo(destinationPath).path())) {
-            qWarning("Failed to create directory path");
+            QMessageBox::warning(
+                this, tr("error"),
+                tr("dir.mkpath %1 fail").arg(QFileInfo(destinationPath).path()),
+                QMessageBox::Yes);
+            QMessageBox::information(this, tr("结果"), result,
+                                     QMessageBox::Yes);
             return;
         }
         // rename操作
         if (!dir.rename(sourcePath, destinationPath)) {
-            QMessageBox::StandardButton reply = QMessageBox::warning(
-                this, tr("error"), tr("qdir.rename fail"), QMessageBox::Yes);
+            QMessageBox::warning(this, tr("error"),
+                                 tr("qdir.rename %1 %2 fail")
+                                     .arg(sourcePath)
+                                     .arg(destinationPath),
+                                 QMessageBox::Yes);
+            QMessageBox::information(this, tr("结果"), result,
+                                     QMessageBox::Yes);
             return;
         }
         // 通过model移动treeNode
