@@ -17,6 +17,12 @@ int main(int argc, char *argv[])
             break;
         }
     }
+
+    // 设置全局字体大小
+    QFont appFont = a.font();
+    appFont.setPointSize(11); // 设置字体大小
+    a.setFont(appFont);
+
     MainWindow w;
     w.show();
     return a.exec();
