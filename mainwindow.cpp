@@ -811,7 +811,14 @@ void MainWindow::on_pasteHddNodeBtn_clicked() {
                       s.currCutHddNode->name);
     qDebug() << sourcePath;
     qDebug() << destinationPath;
+    QDir dir;
+    if (!dir.rename(sourcePath, destinationPath)) {
+        QMessageBox::StandardButton reply = QMessageBox::warning(
+            this, tr("error"), tr("qdir.rename fail"), QMessageBox::Yes);
+        return;
+    }
     // 通过model移动treeNode
+    
     // 寻找受影响的declare node
     // 修改左边
 }
