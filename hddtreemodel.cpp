@@ -1,5 +1,7 @@
 #include "hddtreemodel.h"
+#include "hddtreenode.h"
 #include <QBrush>
+#include <memory>
 
 HddTreeModel::HddTreeModel(std::shared_ptr<HddTreeNode> ptr) : TreeModel(ptr) {}
 
@@ -52,4 +54,14 @@ void HddTreeModel::ChangeDeclareRepoPath(std::shared_ptr<HddTreeNode> ptr,
     ptr->saveData.path = newRepoPath;
     ptr->saveData.lazyNodePtr.reset();
     this->endResetModel();
+}
+
+std::shared_ptr<HddTreeNode>
+HddTreeModel::CreatePtrByPath(std::shared_ptr<HddTreeNode> rootPtr,
+                              QString path) {
+    this->beginResetModel();
+    auto newNode = TreeNode::CreatePtrByPath<HddTreeNode>(rootPtr, path);
+    this->endResetModel();
+    auto ret = std::dynamic_pointer_cast<HddTreeNode>(newNode);
+    return ret;
 }

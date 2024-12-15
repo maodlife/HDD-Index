@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <memory>
 #include <qdebug.h>
+#include <qfileinfo.h>
 #include <qlabel.h>
 #include <qlogging.h>
 #include <qnamespace.h>
@@ -355,7 +356,94 @@ void MainWindow::on_refreshHddBtn_clicked() {
 }
 
 // 移动本地文件
-void MainWindow::on_moveLocalFileBtn_clicked() {}
+void MainWindow::on_moveLocalFileBtn_clicked() {
+    // 检查是否连接到本地磁盘
+    auto &hddData = s.hddDataList[this->hddComboBox->currentIndex()];
+    if (hddData.dirPath.isEmpty()) {
+        QMessageBox::information(this, tr("提示"), tr("还没有连接到本地磁盘"),
+                                 QMessageBox::Yes);
+        return;
+    }
+    auto leftIndex = repoTreeView->currentIndex();
+    auto leftNode = s.repoData.model->GetSharedPtr(leftIndex);
+    if (leftNode == nullptr)
+        leftNode = s.repoData.rootPtr;
+    // 用户二次确认弹窗
+    QMessageBox::StandardButton reply = QMessageBox::warning(
+        this, tr("警告"),
+        tr("此操作会修改连接的磁盘的文件层级。你确定要继续吗？\n\
+左边Repository的%1将视为与右边%2的%3相同层级")
+            .arg(leftNode->name)
+            .arg(hddData.labelName)
+            .arg(hddData.rootPtr->name),
+        QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::StandardButton::No) {
+        return;
+    }
+    // 搜索所有需要移动的hdd node
+    auto needMoveNodes =
+        TreeNode::findIfInTree(hddData.rootPtr, [](const auto &value) {
+            auto hddNode = dynamic_pointer_cast<HddTreeNode>(value);
+            return hddNode->saveData.path.size() != 0;
+        });
+    // 用于记录结果
+    QString result;
+    // 依次处理每一个
+    for (const auto &needMoveNode : needMoveNodes) {
+        auto hddNode = dynamic_pointer_cast<HddTreeNode>(needMoveNode);
+        // 找到对应的repo节点
+        auto repoPath = hddNode->saveData.path;
+        auto repoNode = TreeNode::getPtrFromPath(s.repoData.rootPtr, repoPath);
+        auto newSubPath = repoNode->getPath(leftNode);
+        // 检查是否能移动到新的节点中
+        auto newParentPath = QFileInfo(newSubPath).path();
+        auto newParentNode =
+            TreeNode::getPtrFromPath(hddData.rootPtr, newParentPath);
+        if (newParentNode == nullptr) {
+            // 创建新的父节点, 用model接口
+            newParentNode =
+                hddData.model->CreatePtrByPath(hddData.rootPtr, newParentPath);
+        } else {
+            auto it = std::find_if(
+                newParentNode->childs.begin(), newParentNode->childs.end(),
+                [=](const auto &x) { return x->name == hddNode->name; });
+            if (it != newParentNode->childs.end()) {
+                QMessageBox::information(
+                    this, tr("提示"),
+                    tr("%1的目标路径已有同名目录,请检查").arg(hddNode->name),
+                    QMessageBox::Yes);
+                return;
+            }
+        }
+        // 移动磁盘中的文件夹
+        QString sourcePath =
+            QDir(hddData.dirPath).filePath(hddNode->getPath(false));
+        QString destinationPath = QDir(hddData.dirPath).filePath(newSubPath);
+        // result += tr("%1 -> %2\n").arg(sourcePath).arg(destinationPath);
+        // 创建所有必要的中间路径
+        QDir dir;
+        if (!dir.mkpath(QFileInfo(destinationPath).path())) {
+            qWarning("Failed to create directory path");
+            return;
+        }
+        // rename操作
+        if (!dir.rename(sourcePath, destinationPath)) {
+            QMessageBox::StandardButton reply = QMessageBox::warning(
+                this, tr("error"), tr("qdir.rename fail"), QMessageBox::Yes);
+            return;
+        }
+        // 通过model移动treeNode
+        hddData.model->CutTreeNode(hddNode, newParentNode);
+        hddData.isDirty = true;
+        // 修改左边
+        auto leftIndex = s.repoData.model->findIndexByTreeNode(repoNode);
+        s.repoData.model->ChangeDeclare(leftIndex, hddData.labelName, hddNode);
+        s.repoData.isDirty = true;
+        // result
+        result += tr("%1\n").arg(hddNode->name);
+    }
+    QMessageBox::information(this, tr("结果"), result, QMessageBox::Yes);
+}
 
 // 选择hddComboBox
 void MainWindow::on_hddComboBox_currentIndexChanged(int index) {

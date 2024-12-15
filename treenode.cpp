@@ -1,8 +1,9 @@
 #include "treenode.h"
 #include <QDir>
-#include <queue>
 #include <QJsonDocument>
 #include <algorithm>
+#include <memory>
+#include <queue>
 #include <stack>
 
 using namespace std;
@@ -84,6 +85,29 @@ QString TreeNode::getPath(bool includeRoot) {
     return ret;
 }
 
+QString TreeNode::getPath(std::shared_ptr<TreeNode> target) {
+    // 判断是否是相同节点
+    if (target->parent.lock() == this->parent.lock() &&
+        target->name == this->name) {
+        return "";
+    }
+    stack<QString> stack;
+    stack.push(this->name);
+    auto curr = this->parent.lock();
+    while (curr != nullptr && curr != target) { // 不含target
+        stack.push(curr->name);
+        curr = curr->parent.lock();
+    }
+    QString ret;
+    while (stack.empty() == false) {
+        ret += stack.top();
+        ret += "/";
+        stack.pop();
+    }
+    ret.chop(1);
+    return ret;
+}
+
 std::shared_ptr<TreeNode>
 TreeNode::getPtrFromPath(std::shared_ptr<TreeNode> rootPtr, QString path) {
     auto split_path = path.split('/');
@@ -92,8 +116,12 @@ TreeNode::getPtrFromPath(std::shared_ptr<TreeNode> rootPtr, QString path) {
     }
     std::shared_ptr<TreeNode> curr = rootPtr;
     for (int i = 1; i < split_path.size(); ++i) {
-        curr = *find_if(curr->childs.begin(), curr->childs.end(),
-                        [=](auto &value) { return value->name == split_path[i]; });
+        auto it =
+            find_if(curr->childs.begin(), curr->childs.end(),
+                    [=](auto &value) { return value->name == split_path[i]; });
+        if (it == curr->childs.end())
+            return nullptr;
+        curr = *it;
     }
     return curr;
 }

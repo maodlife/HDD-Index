@@ -24,6 +24,10 @@ public:
     // 修改声明持有的路径
     void ChangeDeclareRepoPath(std::shared_ptr<HddTreeNode> ptr,
                                QString newRepoPath);
+
+    // 基于path递归创建节点, path开头和rootPtr不同，直接就是第一个孩子
+    std::shared_ptr<HddTreeNode>
+    CreatePtrByPath(std::shared_ptr<HddTreeNode> rootPtr, QString path);
 };
 
 #endif // HDDTREEMODEL_H

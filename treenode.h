@@ -46,12 +46,21 @@ public:
     // 返回裸指针的智能指针，不能是根节点, 否则返回nullptr
     static std::shared_ptr<TreeNode> get_shared_ptr(TreeNode *ptr);
 
-    // 从root开始到自己的Path
+    // 从root开始到自己的Path, 包括自己
     QString getPath(bool includeRoot = true);
+
+    // 从root开始到Target的Path, 不含target, 包括自己
+    QString getPath(std::shared_ptr<TreeNode> target);
 
     // 传入Path返回节点指针，Path的开头是rootPtr的name
     static std::shared_ptr<TreeNode>
     getPtrFromPath(std::shared_ptr<TreeNode> rootPtr, QString path);
+
+    // 基于path递归创建节点, path开头和rootPtr不同，直接就是第一个孩子
+    template <typename NodeType>
+        requires std::derived_from<NodeType, TreeNode>
+    static std::shared_ptr<TreeNode>
+    CreatePtrByPath(std::shared_ptr<TreeNode> rootPtr, QString path);
 
     // 从指定节点递归查找，返回所有满足条件的指针
     static std::vector<std::shared_ptr<TreeNode>> findIfInTree(
@@ -90,6 +99,29 @@ std::shared_ptr<NodeType> TreeNode::fromJsonObject(const QJsonObject &json) {
     }
 
     return node;
+}
+
+template <typename NodeType>
+    requires std::derived_from<NodeType, TreeNode>
+std::shared_ptr<TreeNode>
+TreeNode::CreatePtrByPath(std::shared_ptr<TreeNode> rootPtr, QString path) {
+    auto split_path = path.split('/');
+    auto &curr = rootPtr;
+    for (const auto &name : split_path) {
+        auto it = std::find_if(curr->childs.begin(), curr->childs.end(),
+                               [=](const auto &x) { return x->name == name; });
+        if (it != curr->childs.end()) {
+            curr = *it;
+        } else {
+            auto newNode = std::make_shared<NodeType>();
+            newNode->name = name;
+            newNode->parent = curr;
+            curr->childs.push_back(newNode);
+            curr->sortChildByName();
+            curr = newNode;
+        }
+    }
+    return curr;
 }
 
 #endif // TREENODE_H
