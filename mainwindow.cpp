@@ -361,10 +361,19 @@ void MainWindow::on_openLocalFileBtn_clicked() {
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
-// 刷新HDD
+// 读取文件夹并刷新HDD
 void MainWindow::on_refreshHddBtn_clicked() {
     QString selectDirPath = QFileDialog::getExistingDirectory(
         nullptr, "Select Folder", "", QFileDialog::DontResolveSymlinks);
+    // 用户二次确认弹窗
+    QMessageBox::StandardButton reply = QMessageBox::warning(
+        this, tr("警告"),
+        tr("选择的文件夹是%1\n确定要全量刷新吗？")
+            .arg(selectDirPath),
+        QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::StandardButton::No) {
+        return;
+    }
     auto newHddRootPtr = HddTreeNode::CreateTreeNodeByDirPath(selectDirPath);
 }
 
