@@ -101,6 +101,14 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     splitterCreateRepoSubDir->addWidget(createRepoSubDirBtn);
     splitterCreateRepoSubDir->addWidget(renameRepoDirBtn);
 
+    QSplitter *splitterExpandRepo = new QSplitter(Qt::Horizontal, splitterLeft);
+    expandAllRepoSaveNodeBtn = new QPushButton(splitterExpandRepo);
+    expandAllRepoSaveNodeBtn->setText("一键展开");
+    expandAllRepoSaveNodeParentBtn = new QPushButton(splitterExpandRepo);
+    expandAllRepoSaveNodeParentBtn->setText("一键展开到父节点");
+    splitterExpandRepo->addWidget(expandAllRepoSaveNodeBtn);
+    splitterExpandRepo->addWidget(expandAllRepoSaveNodeParentBtn);
+
     QSplitter *splitterRepoSaveNode =
         new QSplitter(Qt::Horizontal, splitterLeft);
     QLabel *repoSaveNodeLabel = new QLabel(splitterRepoSaveNode);
@@ -128,6 +136,7 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     splitterLeft->addWidget(splitterSearchRepo);
     splitterLeft->addWidget(repoTreeView);
     splitterLeft->addWidget(splitterCreateRepoSubDir);
+    splitterLeft->addWidget(splitterExpandRepo);
     splitterLeft->addWidget(splitterRepoSaveNode);
     splitterLeft->addWidget(splitterRepoNodeOp);
 
@@ -234,6 +243,10 @@ void MainWindow::connectUiData() {
             &MainWindow::on_createDirBtn_clicked);
     connect(this->renameRepoDirBtn, &QPushButton::clicked, this,
             &MainWindow::on_renameRepoBtn_clicked);
+    connect(this->expandAllRepoSaveNodeBtn, &QPushButton::clicked, this,
+            &MainWindow::on_expandAllRepoSaveNodeBtn_clicked);
+    connect(this->expandAllRepoSaveNodeParentBtn, &QPushButton::clicked, this,
+            &MainWindow::on_expandAllRepoSaveNodeParentBtn_clicked);
     connect(this->jmpRepoSaveDataHddBtn, &QPushButton::clicked, this,
             &MainWindow::on_jumpToSaveHddNodeBtn_clicked);
     connect(this->deleteRepoNodeBtn, &QPushButton::clicked, this,
@@ -803,6 +816,40 @@ void MainWindow::on_pasteRepoBtn_clicked() {
 // 重命名repo节点
 void MainWindow::on_renameRepoBtn_clicked() {
     // 实现上可以做成原地剪切成另一个名字
+}
+
+// 一键展开
+void MainWindow::on_expandAllRepoSaveNodeBtn_clicked() {
+    auto foundList =
+        TreeNode::findIfInTree(s.repoData.rootPtr, [](const auto &node) {
+            auto repoNode = dynamic_pointer_cast<RepoTreeNode>(node);
+            return !repoNode->nodeSaveDatas.empty();
+        });
+    for (const auto &found : foundList) {
+        auto index = s.repoData.model->findIndexByTreeNode(found);
+        // repoTreeView->expand(index.parent());
+        Solution::ExpandAndSetTreeViewNode(repoTreeView, index);
+    }
+}
+
+// 一键展开到父节点
+void MainWindow::on_expandAllRepoSaveNodeParentBtn_clicked() {
+    auto foundList =
+        TreeNode::findIfInTree(s.repoData.rootPtr, [](const auto &node) {
+            auto repoNode = dynamic_pointer_cast<RepoTreeNode>(node);
+            for (const auto &childNode : repoNode->childs) {
+                auto childRepoNode =
+                    dynamic_pointer_cast<RepoTreeNode>(childNode);
+                if (!childRepoNode->nodeSaveDatas.empty())
+                    return true;
+            }
+            return false;
+        });
+    for (const auto &found : foundList) {
+        auto index = s.repoData.model->findIndexByTreeNode(found);
+        // repoTreeView->expand(index.parent());
+        Solution::ExpandAndSetTreeViewNode(repoTreeView, index);
+    }
 }
 
 void MainWindow::on_copyHddTreeToRepoBtn_clicked() {

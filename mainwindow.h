@@ -35,6 +35,8 @@ private:
     QLineEdit *createDirNameLineEdit;
     QPushButton *createRepoSubDirBtn;
     QPushButton *renameRepoDirBtn;
+    QPushButton *expandAllRepoSaveNodeBtn;
+    QPushButton *expandAllRepoSaveNodeParentBtn;
     QComboBox *repoSaveDataHddComboBox;
     QPushButton *jmpRepoSaveDataHddBtn;
     QPushButton *deleteRepoNodeBtn;
@@ -137,6 +139,12 @@ private:
 
     // 重命名repo节点
     void on_renameRepoBtn_clicked();
+
+    // 一键展开
+    void on_expandAllRepoSaveNodeBtn_clicked();
+
+    // 一键展开到父节点
+    void on_expandAllRepoSaveNodeParentBtn_clicked();
 
     // 拷贝文件层级，但不声明持有
     void on_copyHddTreeToRepoBtn_clicked();
