@@ -8,8 +8,13 @@ struct DeclareSaveData {
     std::weak_ptr<TreeNode> lazyNodePtr;
 };
 
-class HddTreeNode : public TreeNode
-{
+class HddTreeNode;
+
+using HddTreeNodeCompareRet =
+    std::tuple<std::vector<std::shared_ptr<HddTreeNode>>,
+               std::vector<std::shared_ptr<HddTreeNode>>>;
+
+class HddTreeNode : public TreeNode {
 public:
     DeclareSaveData saveData;
 
@@ -22,8 +27,12 @@ public:
     // 读文件夹路径, 并访问磁盘目录, 构造一棵树
     static std::shared_ptr<HddTreeNode> CreateTreeNodeByDirPath(QString path);
 
-    static void CompareTree(std::shared_ptr<HddTreeNode> source,
-                            std::shared_ptr<HddTreeNode> target);
+    // return:
+    // source中的待删除
+    // target中的待添加
+    static HddTreeNodeCompareRet
+    CompareTree(std::shared_ptr<HddTreeNode> source,
+                std::shared_ptr<HddTreeNode> target);
 };
 
 #endif // HDDTREENODE_H

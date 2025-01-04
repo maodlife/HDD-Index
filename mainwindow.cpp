@@ -374,7 +374,32 @@ void MainWindow::on_refreshHddBtn_clicked() {
     if (reply == QMessageBox::StandardButton::No) {
         return;
     }
+    auto &oldHddRootPtr =
+        s.hddDataList[this->hddComboBox->currentIndex()].rootPtr;
     auto newHddRootPtr = HddTreeNode::CreateTreeNodeByDirPath(selectDirPath);
+    auto [removeNodes, addNodes] =
+        HddTreeNode::CompareTree(oldHddRootPtr, newHddRootPtr);
+    // compare结果确认
+    QString removeResult;
+    for (const auto &x : removeNodes) {
+        removeResult += x->getPath() + "\n";
+    }
+    QString addResult;
+    for (const auto &x : addNodes) {
+        addResult += x->getPath() + "\n";
+    }
+    QMessageBox::StandardButton compareResultReply =
+        QMessageBox::warning(this, tr("警告"),
+                             tr("待删除:\n%1\n待新增:\n%2\n是否继续？")
+                                 .arg(removeResult)
+                                 .arg(addResult),
+                             QMessageBox::Yes | QMessageBox::No);
+    if (compareResultReply == QMessageBox::StandardButton::No) {
+        return;
+    }
+    // 删除
+
+    // 添加
 }
 
 // 移动本地文件
