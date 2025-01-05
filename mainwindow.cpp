@@ -361,11 +361,123 @@ void MainWindow::on_openLocalFileBtn_clicked() {
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
-// 刷新HDD
+// 读取文件夹并刷新HDD
 void MainWindow::on_refreshHddBtn_clicked() {
     QString selectDirPath = QFileDialog::getExistingDirectory(
         nullptr, "Select Folder", "", QFileDialog::DontResolveSymlinks);
+    // 用户二次确认弹窗
+    QMessageBox::StandardButton reply = QMessageBox::warning(
+        this, tr("警告"),
+        tr("选择的文件夹是%1\n确定要全量刷新吗？")
+            .arg(selectDirPath),
+        QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::StandardButton::No) {
+        return;
+    }
+    auto &oldHddRootPtr =
+        s.hddDataList[this->hddComboBox->currentIndex()].rootPtr;
     auto newHddRootPtr = HddTreeNode::CreateTreeNodeByDirPath(selectDirPath);
+    auto [removeNodes, addNodes] =
+        HddTreeNode::CompareTree(oldHddRootPtr, newHddRootPtr);
+    // compare结果确认
+    QString removeResult;
+    for (const auto &x : removeNodes) {
+        removeResult += x->getPath() + "\n";
+    }
+    QString addResult;
+    for (const auto &x : addNodes) {
+        addResult += x->getPath() + "\n";
+    }
+    QMessageBox::StandardButton compareResultReply =
+        QMessageBox::warning(this, tr("警告"),
+                             tr("待删除:\n%1\n待新增:\n%2\n是否继续？")
+                                 .arg(removeResult)
+                                 .arg(addResult),
+                             QMessageBox::Yes | QMessageBox::No);
+    if (compareResultReply == QMessageBox::StandardButton::No) {
+        return;
+    }
+    QString operationResult;
+    bool dirty = false;
+    // 删除
+    for (const auto &removeNode : removeNodes) {
+        // 如果删除的节点的子树中包含了Declare节点，则跳过，让用户自行处理
+        auto findRet = TreeNode::findIfInTree(removeNode, [=](const auto &x) {
+            auto hddX = dynamic_pointer_cast<HddTreeNode>(x);
+            return hddX != nullptr && !hddX->saveData.path.isEmpty();
+        });
+        if (findRet.size() != 0) {
+            operationResult += tr("%1中含有声明节点，已跳过处理。\n")
+                                   .arg(removeNode->getPath());
+            continue;
+        }
+        // 如果递归的父节点中有Declare节点，则检查待删除节点是否是必须的
+        auto parent = removeNode->parent.lock();
+        while (parent != nullptr) {
+            auto hddParent = dynamic_pointer_cast<HddTreeNode>(parent);
+            if (!hddParent->saveData.path.isEmpty())
+                break;
+            else
+                parent = parent->parent.lock();
+        }
+        if (parent != nullptr) {
+            auto hddParent = dynamic_pointer_cast<HddTreeNode>(parent);
+            auto repoParent = TreeNode::getPtrFromPath(
+                s.repoData.rootPtr, hddParent->saveData.path);
+            auto repoSubNode = TreeNode::getPtrFromPath(
+                repoParent, removeNode->getPath(hddParent));
+            if (repoSubNode == nullptr) {
+                // 没找到
+                operationResult +=
+                    tr("%1的父节点%2是Declare节点，但%3不必须，已删除。\n")
+                        .arg(removeNode->getPath())
+                        .arg(hddParent->getPath())
+                        .arg(removeNode->name);
+                auto removeNodeParent = removeNode->parent.lock();
+                removeNodeParent->childs.erase(std::find_if(
+                    removeNodeParent->childs.begin(),
+                    removeNodeParent->childs.end(), [=](const auto &x) {
+                        return x->name == removeNode->name;
+                    }));
+                dirty = true;
+            } else {
+                // 找到了
+                operationResult +=
+                    tr("%1的父节点%2是Declare节点，且%3必须，已跳过。\n")
+                        .arg(removeNode->getPath())
+                        .arg(hddParent->getPath())
+                        .arg(removeNode->name);
+            }
+            continue;
+        }
+        // 子树和递归父节点都没有Declare，正常删除
+        parent = removeNode->parent.lock();
+        auto found = std::find_if(
+            parent->childs.begin(), parent->childs.end(),
+            [=](const auto &x) { return removeNode->name == x->name; });
+        if (found != parent->childs.end()) {
+            operationResult += tr("%1已删除\n").arg(removeNode->getPath());
+            parent->childs.erase(found);
+            dirty = true;
+        }
+    }
+    // 添加
+    for (const auto &addNode : addNodes) {
+        auto newParent = addNode->parent.lock();
+        auto oldParent =
+            TreeNode::getPtrFromPath(oldHddRootPtr, newParent->getPath());
+        oldParent->childs.push_back(addNode);
+        addNode->parent = oldParent;
+        oldParent->sortChildByName();
+        operationResult += tr("%1已添加\n").arg(addNode->getPath());
+    }
+    // 输出结果
+    QMessageBox operationMsgBox;
+    operationMsgBox.setText(operationResult);
+    operationMsgBox.exec();
+    if (dirty) {
+        s.hddDataList[this->hddComboBox->currentIndex()].isDirty = true;
+    }
 }
 
 // 移动本地文件
