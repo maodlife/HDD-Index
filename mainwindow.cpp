@@ -782,6 +782,9 @@ void MainWindow::on_jumpToRepoNodeBtn_clicked() {
             hddTreeViewIndex);
     auto hddTreeNodePtr = dynamic_pointer_cast<HddTreeNode>(treeNodePtr);
     auto repoNodePath = hddTreeNodePtr->saveData.path;
+    if (repoNodePath.size() == 0) {
+        return;
+    }
     auto repoNode = TreeNode::getPtrFromPath(s.repoData.rootPtr, repoNodePath);
     auto targetRepoIndex = s.repoData.model->findIndexByTreeNode(repoNode);
     // 展开到目标节点
