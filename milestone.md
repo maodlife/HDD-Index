@@ -17,6 +17,7 @@
 
 ### High Priority
 
+- [ ] 在repository中筛选连接了本地硬盘的文件
 - [ ] 重命名repo节点, 同时更新相关信息
 - [ ] HDD节点标记为可删除
 
