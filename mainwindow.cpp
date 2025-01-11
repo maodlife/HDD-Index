@@ -368,12 +368,13 @@ void MainWindow::on_refreshHddBtn_clicked() {
     // 用户二次确认弹窗
     QMessageBox::StandardButton reply = QMessageBox::warning(
         this, tr("警告"),
-        tr("选择的文件夹是%1\n确定要全量刷新吗？")
-            .arg(selectDirPath),
+        tr("选择的文件夹是%1\n确定要全量刷新吗？").arg(selectDirPath),
         QMessageBox::Yes | QMessageBox::No);
     if (reply == QMessageBox::StandardButton::No) {
         return;
     }
+    // 解绑TreeView
+    this->hddTreeView->setModel(nullptr);
     auto &oldHddRootPtr =
         s.hddDataList[this->hddComboBox->currentIndex()].rootPtr;
     auto newHddRootPtr = HddTreeNode::CreateTreeNodeByDirPath(selectDirPath);
@@ -472,12 +473,14 @@ void MainWindow::on_refreshHddBtn_clicked() {
         operationResult += tr("%1已添加\n").arg(addNode->getPath());
     }
     // 输出结果
-    QMessageBox operationMsgBox;
-    operationMsgBox.setText(operationResult);
-    operationMsgBox.exec();
+    QMessageBox::warning(this, tr("通知"), operationResult, QMessageBox::Yes);
     if (dirty) {
         s.hddDataList[this->hddComboBox->currentIndex()].isDirty = true;
     }
+    // 新建model并绑定到view
+    s.hddDataList[this->hddComboBox->currentIndex()].model = make_shared<HddTreeModel>(
+        s.hddDataList[this->hddComboBox->currentIndex()].rootPtr);
+    this->hddTreeView->setModel(s.hddDataList[this->hddComboBox->currentIndex()].model.get());
 }
 
 // 移动本地文件
