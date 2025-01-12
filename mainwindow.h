@@ -64,6 +64,8 @@ private:
     QPushButton *findSameNameBtn;
     QPushButton *cutHddNodeBtn;
     QPushButton *pasteHddNodeBtn;
+    QPushButton *expandHddDeclareNodeBtn;
+    QPushButton *expandHddDeclareNodeParentBtn;
 
     void CreataUIData(QMainWindow *parent);
 
@@ -145,6 +147,12 @@ private:
 
     // 一键展开到父节点
     void on_expandAllRepoSaveNodeParentBtn_clicked();
+
+    // HDD一键展开
+    void on_expandAllHddDeclareNodeBtn_clicked();
+
+    // HDD一键展开到父节点
+    void on_expandAllHddDeclareNodeParentBtn_clicked();
 
     // 拷贝文件层级，但不声明持有
     void on_copyHddTreeToRepoBtn_clicked();

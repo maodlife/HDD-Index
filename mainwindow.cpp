@@ -217,6 +217,12 @@ void MainWindow::CreataUIData(QMainWindow *parent) {
     pasteHddNodeBtn->setText("粘贴");
     pasteHddNodeBtn->setEnabled(false);
     splitterHddNodeCut->addWidget(pasteHddNodeBtn);
+    expandHddDeclareNodeBtn = new QPushButton(splitterHddNodeCut);
+    expandHddDeclareNodeBtn->setText("一键展开");
+    splitterHddNodeCut->addWidget(expandHddDeclareNodeBtn);
+    expandHddDeclareNodeParentBtn = new QPushButton(splitterHddNodeCut);
+    expandHddDeclareNodeParentBtn->setText("一键展开到父节点");
+    splitterHddNodeCut->addWidget(expandHddDeclareNodeParentBtn);
 
     splitterRight->addWidget(splitterHddView);
     splitterRight->addWidget(splitterHddOp);
@@ -293,6 +299,10 @@ void MainWindow::connectUiData() {
             &MainWindow::on_cutHddNodeBtn_clicked);
     connect(this->pasteHddNodeBtn, &QPushButton::clicked, this,
             &MainWindow::on_pasteHddNodeBtn_clicked);
+    connect(this->expandHddDeclareNodeBtn, &QPushButton::clicked, this,
+            &MainWindow::on_expandAllHddDeclareNodeBtn_clicked);
+    connect(this->expandHddDeclareNodeParentBtn, &QPushButton::clicked, this,
+            &MainWindow::on_expandAllHddDeclareNodeParentBtn_clicked);
 }
 
 // 添加HDD
@@ -967,6 +977,42 @@ void MainWindow::on_expandAllRepoSaveNodeParentBtn_clicked() {
         auto index = s.repoData.model->findIndexByTreeNode(found);
         // repoTreeView->expand(index.parent());
         Solution::ExpandAndSetTreeViewNode(repoTreeView, index);
+    }
+}
+
+// HDD一键展开
+void MainWindow::on_expandAllHddDeclareNodeBtn_clicked() {
+    auto &hddData = s.hddDataList[hddComboBox->currentIndex()];
+    auto foundList =
+        TreeNode::findIfInTree(hddData.rootPtr, [](const auto &node) {
+            auto hddNode = dynamic_pointer_cast<HddTreeNode>(node);
+            return !hddNode->saveData.path.isEmpty();
+        });
+    for (const auto &found : foundList) {
+        auto index = hddData.model->findIndexByTreeNode(found);
+        // repoTreeView->expand(index.parent());
+        Solution::ExpandAndSetTreeViewNode(hddTreeView, index);
+    }
+}
+
+// HDD一键展开到父节点
+void MainWindow::on_expandAllHddDeclareNodeParentBtn_clicked() {
+    auto &hddData = s.hddDataList[hddComboBox->currentIndex()];
+    auto foundList =
+        TreeNode::findIfInTree(hddData.rootPtr, [](const auto &node) {
+            auto hddNode = dynamic_pointer_cast<HddTreeNode>(node);
+            for (const auto &childNode : hddNode->childs) {
+                auto childHddNode =
+                    dynamic_pointer_cast<HddTreeNode>(childNode);
+                if (!childHddNode->saveData.path.isEmpty())
+                    return true;
+            }
+            return false;
+        });
+    for (const auto &found : foundList) {
+        auto index = hddData.model->findIndexByTreeNode(found);
+        // repoTreeView->expand(index.parent());
+        Solution::ExpandAndSetTreeViewNode(hddTreeView, index);
     }
 }
 
