@@ -1,3 +1,10 @@
+> [!WARNING]
+> **Project Deprecated / 项目已停止维护**
+> 
+> This project is no longer actively maintained. There is a new C#/Avalonia implementation of this app: [HDD-Index-Avalonia](https://github.com/maodlife/HDD-Index-Avalonia)
+> 
+> 本项目已停止开发。有一个基于C#/Avalonia 进行开发的新项目：[HDD-Index-Avalonia](https://github.com/maodlife/HDD-Index-Avalonia)
+
 # HDD-Index
 
 HDD Index is a Qt/C++ program that can organize and browse disk indexes.
